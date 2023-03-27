@@ -21,9 +21,16 @@ public class ProveedorController {
                                      @RequestParam("categoria") String categoria,
                                      @RequestParam("retencion") String retencion,
                                      RedirectAttributes redirect_attr){
-        proveedor_service.registrarProveedor(codigo, nombre, categoria, retencion);
-        redirect_attr.addFlashAttribute("message", "Proveedor registrado correctamente!")
-                     .addFlashAttribute("class", "success-alert");
+        try {
+            proveedor_service.registrarProveedor(codigo, nombre, categoria, retencion);
+            redirect_attr.addFlashAttribute("message", "Proveedor registrado correctamente!")
+                    .addFlashAttribute("class", "success-alert");
+        }
+        catch (Exception e){
+            redirect_attr.addFlashAttribute("message", e.getMessage())
+                    .addFlashAttribute("class", "error-alert");
+        }
+
         return "redirect:/proveedor/registrar";
     }
 
