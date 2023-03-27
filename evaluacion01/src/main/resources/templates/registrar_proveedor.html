@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html
+    lang="es"
+    xmlns:th="http://www.thymeleaf.org"
+>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Registrar Proveedor</title>
+        <link
+            rel="stylesheet"
+            href="../static/styles/navbar.css"
+            type="text/css"
+            th:href="@{/styles/navbar.css}"
+        />
+        <link
+            rel="stylesheet"
+            href="../static/styles/general.css"
+            type="text/css"
+            th:href="@{/styles/general.css}"
+        />
+        <link
+            rel="stylesheet"
+            href="../static/styles/registrar_proveedor.css"
+            type="text/css"
+            th:href="@{/styles/registrar_proveedor.css}"
+        />
+    </head>
+    <body>
+        <header class="navbar">
+            <a class="link-active" href="/proveedores/registrar">Ingresar Proveedor</a>
+            <a>Listar Proveedores</a>
+            <p class="logo">MilkStgo</p>
+            <a>Importar Excel</a>
+            <a>Planilla de Pagos</a>
+        </header>
+        <div class="main">
+            <div class="title">
+                <h3>Registro de Proveedor</h3>
+                <hr />
+            </div>
+            <div th:class="${class}" th:text="${message}" th:if="${message}">
+            </div>
+            <form class="form" th:action="@{/proveedor/registrar}" method="POST">
+                <input name="nombre" class="input" type="text" placeholder="Nombre" required/>
+                <input name="codigo" class="input" type="text" placeholder="Código" required/>
+                <div class="selects">
+                    <select
+                        name="categoria"
+                        class="input"
+                        required
+                    >
+                        <option value="" disabled selected>Categoría</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                    <select
+                        name="retencion"
+                        class="input"
+                        required
+                    >
+                        <option value="" disabled selected>Afecto a Retención</option>
+                        <option value="Si">Si</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar</button>
+            </form>
+        </div>
+    </body>
+</html>
