@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Lista de Proveedores</title>
+        <link
+            rel="stylesheet"
+            href="../static/styles/navbar.css"
+            type="text/css"
+            th:href="@{/styles/navbar.css}"
+        />
+        <link
+            rel="stylesheet"
+            href="../static/styles/general.css"
+            type="text/css"
+            th:href="@{/styles/general.css}"
+        />
+        <link
+            rel="stylesheet"
+            href="../static/styles/listar_proveedores.css"
+            type="text/css"
+            th:href="@{/styles/listar_proveedores.css}"
+        />
+    </head>
+
+    <body>
+        <header class="navbar">
+            <a href="/proveedores/registrar">Ingresar Proveedor</a>
+            <a class="link-active" href="/proveedores/listar"
+                >Listar Proveedores</a
+            >
+            <p class="logo">MilkStgo</p>
+            <a>Importar Excel</a>
+            <a>Planilla de Pagos</a>
+        </header>
+        <div class="main">
+            <div class="title">
+                <h3>Proveedores Registrados</h3>
+                <hr />
+            </div>
+            <div
+                class="informative-alert"
+                th:text="${message}"
+                th:if="${message}"
+            ></div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th class="max">Categoría</th>
+                        <th class="max">Afecto a Retención</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="proveedores:${proveedores}">
+                        <td th:text="${proveedores.codigo}"></td>
+                        <td th:text="${proveedores.nombre}"></td>
+                        <td th:text="${proveedores.categoria}"></td>
+                        <td th:text="${proveedores.retencion}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

@@ -11,6 +11,7 @@
 .navbar a {
     color: white;
     font-size: 18px;
+    font-weight: 500;
     cursor: pointer;
     text-decoration: none;
     width: 168px;
@@ -27,4 +28,5 @@
     font-style: normal;
     font-weight: 400;
     font-size: 42px;
+    text-shadow: 0px 3px 3px rgba(226, 113, 32, 0.60);
 }

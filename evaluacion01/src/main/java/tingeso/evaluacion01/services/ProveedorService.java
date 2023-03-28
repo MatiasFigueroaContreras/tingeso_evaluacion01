@@ -36,11 +36,19 @@ public class ProveedorService {
             throw new Exception("El afecto a retencion ingresado no es valido");
         }
 
+        if(proveedor_repository.findById(codigo).isPresent()){
+            throw new Exception("El proveedor ya se encuentra registrado");
+        }
+
         ProveedorEntity proveedor = new ProveedorEntity();
         proveedor.setCodigo(codigo);
         proveedor.setNombre(nombre);
         proveedor.setCategoria(categoria);
         proveedor.setRetencion(retencion);
         proveedor_repository.save(proveedor);
+    }
+
+    public ArrayList<ProveedorEntity> obtenerProveedores(){
+        return new ArrayList<ProveedorEntity>(proveedor_repository.findAll());
     }
 }

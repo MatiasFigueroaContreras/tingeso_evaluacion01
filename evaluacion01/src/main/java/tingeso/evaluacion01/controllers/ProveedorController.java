@@ -2,12 +2,16 @@ package tingeso.evaluacion01.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.services.ProveedorService;
+
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping
@@ -15,7 +19,7 @@ public class ProveedorController {
     @Autowired
     ProveedorService proveedor_service;
 
-    @PostMapping("/proveedor/registrar")
+    @PostMapping("/proveedores/registrar")
     public String registrarProveedor(@RequestParam("codigo") String codigo,
                                      @RequestParam("nombre") String nombre,
                                      @RequestParam("categoria") String categoria,
@@ -31,11 +35,22 @@ public class ProveedorController {
                     .addFlashAttribute("class", "error-alert");
         }
 
-        return "redirect:/proveedor/registrar";
+        return "redirect:/proveedores/registrar";
     }
 
-    @GetMapping("/proveedor/registrar")
+    @GetMapping("/proveedores/listar")
+    public String listarProveedores(Model model){
+        ArrayList<ProveedorEntity> proveedores = proveedor_service.obtenerProveedores();
+        model.addAttribute("proveedores", proveedores);
+        if(proveedores.isEmpty()){
+            model.addAttribute("message", "Aun no se han registrado proveedores");
+        }
+        return "listar_proveedores";
+    }
+
+    @GetMapping("/proveedores/registrar")
     public String registrarProveedorPage(){
         return "registrar_proveedor";
     }
+
 }

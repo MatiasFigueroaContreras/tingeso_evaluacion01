@@ -5,9 +5,67 @@
     padding: 0;
     font-family: 'Rubik';
     font-style: normal;
-    font-weight: 500;
 }
 
 body {
     background-color: #DFE0DF;
+}
+
+.main {
+    display: grid;
+    justify-items: center;
+}
+
+.title {
+    margin-bottom: 3vh;
+}
+
+.title h3 {
+    color: #000000;
+    font-size: 36px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.title hr {
+    background-color: #120D0E;
+    height: 3px;
+    border: none;
+}
+
+.success-alert {
+    display: flex;
+    background-color: #D4EDDA;
+    width: 500px;
+    height: 50px;
+    align-items: center;
+    padding: 0 20px 0 20px;
+    border-radius: 8px;
+    border: 1px solid #075D23;
+    color: #075D23;
+}
+
+.error-alert {
+    display: flex;
+    background-color: #FFB7B7;
+    width: 500px;
+    height: 50px;
+    align-items: center;
+    padding: 0 20px 0 20px;
+    border-radius: 8px;
+    border: 1px solid #FF0000;
+    color: #FF0000;
+}
+
+.informative-alert {
+    display: flex;
+    background-color: #CCE8F4;
+    width: 500px;
+    height: 50px;
+    align-items: center;
+    padding: 0 20px 0 20px;
+    border-radius: 8px;
+    border: 1px solid #008EBB;
+    color: #008EBB;
 }
