@@ -45,7 +45,11 @@
                     </svg>
                 </div>
                 <ul class="dropdown-content">
-                    <li><a class="link-active" href="">Acopio de leche</a></li>
+                    <li>
+                        <a class="link-active" href="/acopios-leche/importar"
+                            >Acopio de leche</a
+                        >
+                    </li>
                     <li><a href="">Grasa y sólidos totales</a></li>
                 </ul>
             </div>
@@ -55,7 +59,13 @@
                 <h3>Subir datos Acopio de Leche</h3>
                 <hr />
             </div>
-            <form class="card">
+            <div th:text="${message}" th:if="${message}"></div>
+            <form
+                class="card"
+                th:action="@{/acopios-leche/importar}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
                 <div class="top-content">
                     <p>Subir archivo con los kilos de leche</p>
                     <div class="selects">
@@ -185,7 +195,7 @@
         }
 
         // Valor actual de la quincena por defecto
-        fortnight_select.value = final_fortnight
+        fortnight_select.value = final_fortnight;
 
         // Meses que se pueden seleccionar
         for (let month = 0; month <= final_month; month++) {
@@ -231,7 +241,7 @@
                 current_month_select.replaceWith(standard_month_select);
             }
         });
-        
+
         // Cambiar quincenas disponibles en funcion del mes
         month_select.addEventListener("change", (e) => {
             const month_selected = e.target.value;
