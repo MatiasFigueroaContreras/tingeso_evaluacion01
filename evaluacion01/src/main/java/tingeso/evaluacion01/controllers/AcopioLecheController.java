@@ -33,10 +33,13 @@ public class AcopioLecheController {
         try {
             ArrayList<AcopioLecheEntity> acopios_leche = acopio_leche_service.leerExcel(file);
             QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            acopio_leche_service.guardarAcopiosLecheQuincena(acopios_leche, quincena);
-            redirect_attr.addFlashAttribute("message", acopios_leche);
-        } catch (IOException e) {
-            redirect_attr.addFlashAttribute("message", e);
+            acopio_leche_service.validarDatosAcopioLecheQuincena(acopios_leche, quincena);
+            acopio_leche_service.guardarAcopiosLecheQuincena(acopios_leche);
+            redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
+                    .addFlashAttribute("class", "success-alert");
+        } catch (Exception e) {
+            redirect_attr.addFlashAttribute("message", e.getMessage())
+                .addFlashAttribute("class", "error-alert");
         }
 
         return "redirect:/acopios-leche/importar";

@@ -59,7 +59,11 @@
                 <h3>Subir datos Acopio de Leche</h3>
                 <hr />
             </div>
-            <div th:text="${message}" th:if="${message}"></div>
+            <div
+                th:class="${class}"
+                th:text="${message}"
+                th:if="${message}"
+            ></div>
             <form
                 class="card"
                 th:action="@{/acopios-leche/importar}"
@@ -132,7 +136,7 @@
             select.append(option);
             for (let month = 0; month < 12; month++) {
                 var option = document.createElement("option");
-                option.value = month;
+                option.value = month + 1;
                 option.text = getMonthName(month);
                 select.append(option);
             }
@@ -200,7 +204,7 @@
         // Meses que se pueden seleccionar
         for (let month = 0; month <= final_month; month++) {
             var month_option = document.createElement("option");
-            month_option.value = month;
+            month_option.value = month + 1;
             month_option.text = getMonthName(month);
             month_select.append(month_option);
         }
@@ -214,7 +218,7 @@
             month_select.value = 11;
         } else {
             // Valor actual del mes por defecto
-            month_select.value = final_month;
+            month_select.value = final_month + 1;
         }
 
         // Años que puede seleccionar

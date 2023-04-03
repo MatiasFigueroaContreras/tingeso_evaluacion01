@@ -10,7 +10,9 @@
     box-sizing: border-box;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 20px;
-    padding: 25px 45px;
+    padding: 25px 45px 20px 45px;
+    margin-top: 2vh;
+    margin-bottom: 3vh;
 }
 
 .card .top-content {
@@ -107,6 +109,7 @@
     width: 200px;
     height: 40px;
     justify-self: center;
+    align-self: center;
     background: #E27120;
     border-radius: 20px;
     border: none;

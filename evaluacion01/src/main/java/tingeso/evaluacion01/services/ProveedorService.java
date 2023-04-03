@@ -51,4 +51,8 @@ public class ProveedorService {
     public ArrayList<ProveedorEntity> obtenerProveedores(){
         return new ArrayList<ProveedorEntity>(proveedor_repository.findAll());
     }
+
+    public boolean existeProveedor(ProveedorEntity proveedor){
+        return proveedor_repository.existsById(proveedor.getCodigo());
+    }
 }

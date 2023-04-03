@@ -1,6 +1,5 @@
 package tingeso.evaluacion01.services;
 
-import org.apache.poi.ss.formula.atp.Switch;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,8 +14,6 @@ import tingeso.evaluacion01.repositories.AcopioLecheRepository;
 
 import lombok.Generated;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -25,22 +22,54 @@ import java.util.Iterator;
 public class AcopioLecheService {
     @Autowired
     AcopioLecheRepository acopio_leche_repository;
+    @Autowired
+    ProveedorService proveedor_service;
 
     public void guardarAcopioLeche(AcopioLecheEntity acopio_leche){
-        // Agregar validacion de datos (Turno: M o T, verificar que proveedor exista, fecha valida)
         acopio_leche_repository.save(acopio_leche);
     }
 
-    public void guardarAcopiosLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) {
+    public void guardarAcopiosLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche) {
         for (AcopioLecheEntity acopio_leche : acopios_leche) {
-            acopio_leche.setQuincena(quincena);
             guardarAcopioLeche(acopio_leche);
         }
     }
 
+    public void validarDatosAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{
+        for (AcopioLecheEntity acopio_leche : acopios_leche) {
+            String turno = acopio_leche.getTurno();
+            Integer kls_leche = acopio_leche.getCantidad_leche();
+            Date fecha = acopio_leche.getFecha();
+            ProveedorEntity proveedor = acopio_leche.getProveedor();
+            //Verifica que sea un turno valido (M o T)
+            if(!turno.equals("M") && !turno.equals("T")){
+                throw new Exception("Algun turno no es valido, debe ser M o T");
+            }
+            //Verificca que los kilos de leche sean positivos
+            if(kls_leche < 0){
+                throw new Exception("Los kilos de leche tienen que ser positivos");
+            }
+
+            //Verifica que la fecha ingresada este dentro de la quincena
+            if(!quincena.estaDentroQuincena(fecha)){
+                throw new Exception("Las fechas ingresadas tienen que coincidir con la quincena");
+            }
+
+            //Verifica que el proveedor este registrado
+            if(!proveedor_service.existeProveedor(proveedor)) {
+                throw new Exception("Los proveedores tienen que estar regsitrados");
+            }
+            acopio_leche.setQuincena(quincena);
+        }
+    }
     @Generated
-    public ArrayList<AcopioLecheEntity> leerExcel(MultipartFile file) throws IOException {
+    public ArrayList<AcopioLecheEntity> leerExcel(MultipartFile file) throws Exception {
         ArrayList<AcopioLecheEntity> acopios_leche = new ArrayList<>();
+        String filename = file.getOriginalFilename();
+        //Verificar que sea un archivo Excel con extension .xlsx
+        if(!filename.endsWith(".xlsx")){
+            throw new Exception("El archivo ingresado no es un .xlsx");
+        }
         XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
         XSSFSheet worksheet = workbook.getSheetAt(0);
         boolean row_verification = true;
@@ -57,13 +86,25 @@ public class AcopioLecheService {
             ProveedorEntity proveedor = new ProveedorEntity();
             while (cell_itr.hasNext()){
                 Cell cell = cell_itr.next();
-                switch(i_cell) {
-                    case 0 -> acopio_leche.setFecha(cell.getDateCellValue());
-                    case 1 -> acopio_leche.setTurno(cell.getStringCellValue());
-                    case 2 -> proveedor.setCodigo(cell.getStringCellValue());
-                    case 3 -> acopio_leche.setCantidad_leche((int) cell.getNumericCellValue());
-                    default -> {
+                try {
+                    switch (i_cell) {
+                        case 0 -> acopio_leche.setFecha(cell.getDateCellValue());
+                        case 1 -> acopio_leche.setTurno(cell.getStringCellValue());
+                        case 2 -> {
+                            try {
+                                proveedor.setCodigo(cell.getStringCellValue());
+                            } catch (IllegalStateException e) {
+                                int codigo = (int) cell.getNumericCellValue();
+                                proveedor.setCodigo(Integer.toString(codigo));
+                            }
+                            break;
+                        }
+                        case 3 -> acopio_leche.setCantidad_leche((int) cell.getNumericCellValue());
+                        default -> {
+                        }
                     }
+                }catch (Exception e){
+                    throw new Exception("El Excel ingresado contiene datos no validos.");
                 }
                 i_cell++;
             }
