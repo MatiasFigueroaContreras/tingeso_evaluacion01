@@ -8,45 +8,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tingeso.evaluacion01.entities.AcopioLecheEntity;
+import tingeso.evaluacion01.entities.GrasaSolidoTotalEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
-import tingeso.evaluacion01.services.AcopioLecheService;
+import tingeso.evaluacion01.services.GrasaSolidoTotalService;
 import tingeso.evaluacion01.services.QuincenaService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 @Controller
 @RequestMapping
-public class AcopioLecheController {
+public class GrasaSolidoTotalController {
     @Autowired
-    AcopioLecheService acopio_leche_service;
+    GrasaSolidoTotalService grasa_solido_total_service;
     @Autowired
     QuincenaService quincena_service;
 
-    @PostMapping("/acopios-leche/importar")
-    public String importarAcopioLeche(@RequestParam("file")MultipartFile file,
+    @PostMapping("/grasas-solidos-totales/importar")
+    public String importarAcopioLeche(@RequestParam("file") MultipartFile file,
                                       @RequestParam("year") Integer year,
                                       @RequestParam("mes") Integer mes,
                                       @RequestParam("quincena") Integer numero,
                                       RedirectAttributes redirect_attr) {
         try {
-            ArrayList<AcopioLecheEntity> acopios_leche = acopio_leche_service.leerExcel(file);
+            ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = grasa_solido_total_service.leerExcel(file);
             QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            acopio_leche_service.validarDatosAcopioLecheQuincena(acopios_leche, quincena);
-            acopio_leche_service.guardarAcopiosLeches(acopios_leche);
+            grasa_solido_total_service.guardarGrasasSolidosTotales(grasas_solidos_totales, quincena);
             redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
                     .addFlashAttribute("class", "success-alert");
         } catch (Exception e) {
             redirect_attr.addFlashAttribute("message", e.getMessage())
-                .addFlashAttribute("class", "error-alert");
+                    .addFlashAttribute("class", "error-alert");
         }
 
-        return "redirect:/acopios-leche/importar";
+        return "redirect:/grasas-solidos-totales/importar";
     }
 
-    @GetMapping("/acopios-leche/importar")
+    @GetMapping("/grasas-solidos-totales/importar")
     public String importarAcopioLechePage(){
-        return "subir_acopio_leche";
+        return "subir_datos_grasas_solidos";
     }
 }

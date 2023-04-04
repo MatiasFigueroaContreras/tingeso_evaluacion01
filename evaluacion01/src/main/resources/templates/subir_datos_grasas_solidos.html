@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8" />
-        <title>Subir Acopio de Leche</title>
+        <title>Subir datos Grasas y Solidos Totales</title>
         <link
             rel="stylesheet"
             href="../static/styles/navbar.css"
@@ -23,9 +23,9 @@
         />
         <link
             rel="stylesheet"
-            href="../static/styles/subir_acopio_leche.css"
+            href="../static/styles/subir_datos_grasas_solidos.css"
             type="text/css"
-            th:href="@{/styles/subir_acopio_leche.css}"
+            th:href="@{/styles/subir_datos_grasas_solidos.css}"
         />
     </head>
     <body>
@@ -52,17 +52,19 @@
                 </div>
                 <ul class="dropdown-content">
                     <li>
-                        <a class="link-active" href="/acopios-leche/importar"
-                            >Acopio de leche</a
+                        <a href="/acopios-leche/importar">Acopio de leche</a>
+                    </li>
+                    <li>
+                        <a class="link-active" href="/grasas-solidos-totales/importar"
+                            >Grasa y sólidos totales</a
                         >
                     </li>
-                    <li><a href="/grasas-solidos-totales/importar">Grasa y sólidos totales</a></li>
                 </ul>
             </div>
         </header>
         <div class="main">
             <div class="title">
-                <h3>Subir datos Acopio de Leche</h3>
+                <h3>Subir datos Grasas y Solidos Totales</h3>
                 <hr />
             </div>
             <div
@@ -72,12 +74,12 @@
             ></div>
             <form
                 class="card"
-                th:action="@{/acopios-leche/importar}"
+                th:action="@{/grasas-solidos-totales/importar}"
                 method="POST"
                 enctype="multipart/form-data"
             >
                 <div class="top-content">
-                    <p>Subir archivo con los kilos de leche</p>
+                    <p>Subir archivo con grasa y solidos totales</p>
                     <div class="selects">
                         <select name="year" id="year" required>
                             <option value="" disabled selected>Año</option>

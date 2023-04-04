@@ -29,7 +29,7 @@ public class AcopioLecheService {
         acopio_leche_repository.save(acopio_leche);
     }
 
-    public void guardarAcopiosLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche) {
+    public void guardarAcopiosLeches(ArrayList<AcopioLecheEntity> acopios_leche) {
         for (AcopioLecheEntity acopio_leche : acopios_leche) {
             guardarAcopioLeche(acopio_leche);
         }
