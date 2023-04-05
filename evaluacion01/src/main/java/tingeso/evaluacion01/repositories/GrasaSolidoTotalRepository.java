@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import tingeso.evaluacion01.entities.GrasaSolidoTotalEntity;
 
 @Repository
-public interface GrasaSolidoTotalRepository extends JpaRepository<GrasaSolidoTotalEntity, Long> {
+public interface GrasaSolidoTotalRepository extends JpaRepository<GrasaSolidoTotalEntity, String> {
 }

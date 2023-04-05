@@ -24,6 +24,10 @@ public class GrasaSolidoTotalService {
     ProveedorService proveedor_service;
 
     public void guardarGrasaSolidoTotal(GrasaSolidoTotalEntity grasa_solido_total){
+        String codigo_proveedor = grasa_solido_total.getProveedor().getCodigo();
+        String quincena = grasa_solido_total.getQuincena().toString();
+        String id = codigo_proveedor + "-" + quincena;
+        grasa_solido_total.setId(id);
         grasa_solido_total_repository.save(grasa_solido_total);
     }
 
@@ -33,11 +37,30 @@ public class GrasaSolidoTotalService {
             guardarGrasaSolidoTotal(grasa_solido_total);
         }
     }
+
+    public void validarDatosGrasasSolidosTotales(ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales) throws Exception{
+        for (GrasaSolidoTotalEntity grasa_solido_total : grasas_solidos_totales) {
+            ProveedorEntity proveedor = grasa_solido_total.getProveedor();
+            Integer porcentaje_grasa = grasa_solido_total.getPorcentaje_grasa();
+            Integer porcentaje_solido_total = grasa_solido_total.getPorcentaje_solido_total();
+            if(porcentaje_grasa < 0 || porcentaje_grasa > 100){
+                throw new Exception("El porcentaje de grasa no es valido");
+            }
+
+            if(porcentaje_solido_total < 0 || porcentaje_solido_total > 100){
+                throw new Exception("El porcentaje de solido total no es valido");
+            }
+
+            if(!proveedor_service.existeProveedor(proveedor)) {
+                throw new Exception("Los proveedores tienen que estar registrados");
+            }
+        }
+    }
+
     @Generated
     public ArrayList<GrasaSolidoTotalEntity> leerExcel(MultipartFile file) throws Exception {
         ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = new ArrayList<>();
         String filename = file.getOriginalFilename();
-        //Verificar que sea un archivo Excel con extension .xlsx
         if(!filename.endsWith(".xlsx")){
             throw new Exception("El archivo ingresado no es un .xlsx");
         }

@@ -24,7 +24,11 @@ public class QuincenaEntity {
     private Integer numero;
 
     public String toString(){
-        return year.toString() + "/" + mes.toString() + "-" + numero.toString();
+        String mes_formateado = mes.toString();
+        if(mes_formateado.length() == 1){
+            mes_formateado = "0" + mes_formateado;
+        }
+        return year.toString() + "/" + mes_formateado + "/" + numero.toString();
     }
 
     public boolean estaDentroQuincena(Date fecha){

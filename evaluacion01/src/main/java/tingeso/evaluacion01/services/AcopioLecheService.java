@@ -13,7 +13,6 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.AcopioLecheRepository;
 
 import lombok.Generated;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -41,32 +40,29 @@ public class AcopioLecheService {
             Integer kls_leche = acopio_leche.getCantidad_leche();
             Date fecha = acopio_leche.getFecha();
             ProveedorEntity proveedor = acopio_leche.getProveedor();
-            //Verifica que sea un turno valido (M o T)
             if(!turno.equals("M") && !turno.equals("T")){
                 throw new Exception("Algun turno no es valido, debe ser M o T");
             }
-            //Verificca que los kilos de leche sean positivos
+
             if(kls_leche < 0){
                 throw new Exception("Los kilos de leche tienen que ser positivos");
             }
 
-            //Verifica que la fecha ingresada este dentro de la quincena
             if(!quincena.estaDentroQuincena(fecha)){
                 throw new Exception("Las fechas ingresadas tienen que coincidir con la quincena");
             }
 
-            //Verifica que el proveedor este registrado
             if(!proveedor_service.existeProveedor(proveedor)) {
-                throw new Exception("Los proveedores tienen que estar regsitrados");
+                throw new Exception("Los proveedores tienen que estar registrados");
             }
             acopio_leche.setQuincena(quincena);
         }
     }
+
     @Generated
     public ArrayList<AcopioLecheEntity> leerExcel(MultipartFile file) throws Exception {
         ArrayList<AcopioLecheEntity> acopios_leche = new ArrayList<>();
         String filename = file.getOriginalFilename();
-        //Verificar que sea un archivo Excel con extension .xlsx
         if(!filename.endsWith(".xlsx")){
             throw new Exception("El archivo ingresado no es un .xlsx");
         }

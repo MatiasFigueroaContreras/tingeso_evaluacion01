@@ -14,12 +14,10 @@ public class QuincenaService {
     QuincenaRepository quincena_repository;
 
     public QuincenaEntity ingresarQuincena(Integer year, Integer mes, Integer numero) throws Exception{
-        //Verifica que sea un mes valido (1-12)
         if(mes > 12 || mes < 1){
             throw new Exception("El mes de la quincena no es valido");
         }
 
-        //Verifica que esa un numero de quincena valido (1-2)
         if(numero != 1 && numero != 2){
             throw new Exception("El numero de quincena no es valido");
         }

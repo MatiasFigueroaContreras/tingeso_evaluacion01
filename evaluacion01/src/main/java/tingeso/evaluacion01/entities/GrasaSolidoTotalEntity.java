@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class GrasaSolidoTotalEntity {
     @Id
-    @SequenceGenerator(name = "grasa_solido_total_sequence", sequenceName = "grasa_solido_total_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "grasa_solido_total_sequence")
-    private Long id;
+    private String id;
     private Integer porcentaje_grasa;
     private Integer porcentaje_solido_total;
     @ManyToOne
