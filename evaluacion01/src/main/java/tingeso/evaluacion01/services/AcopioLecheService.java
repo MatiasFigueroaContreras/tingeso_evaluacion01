@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tingeso.evaluacion01.entities.AcopioLecheEntity;
+import tingeso.evaluacion01.entities.GrasaSolidoTotalEntity;
 import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.AcopioLecheRepository;
@@ -25,6 +26,11 @@ public class AcopioLecheService {
     ProveedorService proveedor_service;
 
     public void guardarAcopioLeche(AcopioLecheEntity acopio_leche){
+        String codigo_proveedor = acopio_leche.getProveedor().getCodigo();
+        String fecha = acopio_leche.getFecha().toString();
+        String turno = acopio_leche.getTurno();
+        String id = codigo_proveedor + "-" + fecha + "-" + turno;
+        acopio_leche.setId(id);
         acopio_leche_repository.save(acopio_leche);
     }
 
@@ -32,6 +38,10 @@ public class AcopioLecheService {
         for (AcopioLecheEntity acopio_leche : acopios_leche) {
             guardarAcopioLeche(acopio_leche);
         }
+    }
+
+    public ArrayList<AcopioLecheEntity> obtenerAcopiosLechePorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
+        return (ArrayList<AcopioLecheEntity>) acopio_leche_repository.findAllByProveedorAndQuincena(proveedor, quincena);
     }
 
     public void validarDatosAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{

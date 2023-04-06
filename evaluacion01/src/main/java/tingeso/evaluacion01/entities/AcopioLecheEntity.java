@@ -16,9 +16,7 @@ import java.util.Date;
 @Data
 public class AcopioLecheEntity {
     @Id
-    @SequenceGenerator(name = "acopio_leche_sequence", sequenceName = "acopio_leche_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "acopio_leche_sequence")
-    private Long id;
+    private String id;
     private String turno;
     private Integer cantidad_leche;
     @JsonFormat(pattern = "yyyy/MM/dd")

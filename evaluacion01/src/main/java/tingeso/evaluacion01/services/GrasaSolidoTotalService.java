@@ -57,6 +57,10 @@ public class GrasaSolidoTotalService {
         }
     }
 
+    public GrasaSolidoTotalEntity obtenerGrasaSolidoTotalPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
+        return grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena);
+    }
+
     @Generated
     public ArrayList<GrasaSolidoTotalEntity> leerExcel(MultipartFile file) throws Exception {
         ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = new ArrayList<>();

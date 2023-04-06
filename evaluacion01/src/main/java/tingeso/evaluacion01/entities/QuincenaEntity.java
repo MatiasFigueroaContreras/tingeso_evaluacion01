@@ -44,4 +44,25 @@ public class QuincenaEntity {
         }
         return year_fecha == year && mes_fecha == mes;
     }
+
+    public QuincenaEntity obtenerQuincenaAnterior(){
+        QuincenaEntity quincena_anterior = new QuincenaEntity();
+        if(numero == 2){
+            quincena_anterior.setNumero(1);
+            quincena_anterior.setMes(mes);
+            quincena_anterior.setYear(year);
+        }
+        else if(mes == 1){
+            quincena_anterior.setNumero(2);
+            quincena_anterior.setMes(12);
+            quincena_anterior.setYear(year - 1);
+        }
+        else {
+            quincena_anterior.setNumero(2);
+            quincena_anterior.setMes(mes - 1);
+            quincena_anterior.setYear(year);
+        }
+        quincena_anterior.setId(quincena_anterior.toString());
+        return quincena_anterior;
+    }
 }
