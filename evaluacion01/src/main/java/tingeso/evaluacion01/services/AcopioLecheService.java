@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tingeso.evaluacion01.entities.AcopioLecheEntity;
-import tingeso.evaluacion01.entities.GrasaSolidoTotalEntity;
 import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.AcopioLecheRepository;

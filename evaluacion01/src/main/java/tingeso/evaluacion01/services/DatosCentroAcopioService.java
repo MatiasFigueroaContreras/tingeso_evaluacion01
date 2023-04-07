@@ -15,9 +15,17 @@ public class DatosCentroAcopioService {
     AcopioLecheService acopio_leche_service;
     @Autowired
     GrasaSolidoTotalService grasa_solido_total_service;
+    @Autowired
+    ProveedorService proveedor_service;
 
     public void guardarDatosCA(DatosCentroAcopioEntity datos_centro_acopio){
         datos_centro_acopio_repository.save(datos_centro_acopio);
+    }
+
+    public void guardarListaDatosCA(ArrayList<DatosCentroAcopioEntity> lista_datos_ca){
+        for(DatosCentroAcopioEntity datos_ca: lista_datos_ca){
+            guardarDatosCA(datos_ca);
+        }
     }
 
     public DatosCentroAcopioEntity obtenerDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
@@ -25,7 +33,7 @@ public class DatosCentroAcopioService {
         return datos_centro_acopio_repository.findByProveedorAndQuincena(proveedor, quincena).get();
     }
 
-    public DatosCentroAcopioEntity calcularDatosCA(ProveedorEntity proveedor, QuincenaEntity quincena){
+    public DatosCentroAcopioEntity calcularDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
         DatosCentroAcopioEntity datos_centro_acopio = new DatosCentroAcopioEntity();
         datos_centro_acopio.setProveedor(proveedor);
         datos_centro_acopio.setQuincena(quincena);
@@ -34,6 +42,17 @@ public class DatosCentroAcopioService {
         datos_centro_acopio.setGrasa_solido_total(grasa_solido_total);
         calcularVariacionesDatosCA(datos_centro_acopio);
         return datos_centro_acopio;
+    }
+
+    public ArrayList<DatosCentroAcopioEntity> calcularDatosCAPorQuincena(QuincenaEntity quincena) {
+        ArrayList<ProveedorEntity> proveedores = proveedor_service.obtenerProveedores();
+        ArrayList<DatosCentroAcopioEntity> lista_datos_ca = new ArrayList<>();
+        for(ProveedorEntity proveedor: proveedores){
+            DatosCentroAcopioEntity datos_ca_proveedor = calcularDatosCAPorProveedorQuincena(proveedor, quincena);
+            lista_datos_ca.add(datos_ca_proveedor);
+        }
+
+        return lista_datos_ca;
     }
 
     public void calcularDatosAcopioLeche(DatosCentroAcopioEntity datos_centro_acopio){
