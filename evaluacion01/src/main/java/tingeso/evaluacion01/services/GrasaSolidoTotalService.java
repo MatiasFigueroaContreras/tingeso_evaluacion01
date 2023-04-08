@@ -15,6 +15,7 @@ import tingeso.evaluacion01.repositories.GrasaSolidoTotalRepository;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 @Service
 public class GrasaSolidoTotalService {
@@ -58,7 +59,12 @@ public class GrasaSolidoTotalService {
     }
 
     public GrasaSolidoTotalEntity obtenerGrasaSolidoTotalPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
-        return grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena);
+        Optional<GrasaSolidoTotalEntity> prueba = grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena);
+        return prueba.get();
+    }
+
+    public boolean existeGrasaSolidoTotalPorQuincena(QuincenaEntity quincena){
+        return grasa_solido_total_repository.existsByQuincena(quincena);
     }
 
     @Generated

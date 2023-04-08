@@ -19,6 +19,8 @@ public class DatosCentroAcopioService {
     ProveedorService proveedor_service;
 
     public void guardarDatosCA(DatosCentroAcopioEntity datos_centro_acopio){
+        String id = datos_centro_acopio.getProveedor().getCodigo() + "-" + datos_centro_acopio.getQuincena().toString();
+        datos_centro_acopio.setId(id);
         datos_centro_acopio_repository.save(datos_centro_acopio);
     }
 
@@ -28,12 +30,20 @@ public class DatosCentroAcopioService {
         }
     }
 
-    public DatosCentroAcopioEntity obtenerDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
-        //Implementar Throws si no existen los Datos
-        return datos_centro_acopio_repository.findByProveedorAndQuincena(proveedor, quincena).get();
+    public DatosCentroAcopioEntity obtenerDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) throws Exception{
+        Optional<DatosCentroAcopioEntity> datos_ca = datos_centro_acopio_repository.findByProveedorAndQuincena(proveedor, quincena);
+        if(!datos_ca.isPresent()){
+            throw new Exception("No se encontraron los datos del centro de acopio, para el proveedor y quincena dados");
+        }
+        return datos_ca.get();
     }
 
-    public DatosCentroAcopioEntity calcularDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
+    public boolean existenDatosCAParaCalculoPorQuincena(QuincenaEntity quincena){
+        return  acopio_leche_service.existenAcopiosLechePorQuincena(quincena) &&
+                grasa_solido_total_service.existeGrasaSolidoTotalPorQuincena(quincena);
+    }
+
+    public DatosCentroAcopioEntity calcularDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) throws Exception {
         DatosCentroAcopioEntity datos_centro_acopio = new DatosCentroAcopioEntity();
         datos_centro_acopio.setProveedor(proveedor);
         datos_centro_acopio.setQuincena(quincena);
@@ -44,7 +54,7 @@ public class DatosCentroAcopioService {
         return datos_centro_acopio;
     }
 
-    public ArrayList<DatosCentroAcopioEntity> calcularDatosCAPorQuincena(QuincenaEntity quincena) {
+    public ArrayList<DatosCentroAcopioEntity> calcularDatosCAPorQuincena(QuincenaEntity quincena) throws Exception {
         ArrayList<ProveedorEntity> proveedores = proveedor_service.obtenerProveedores();
         ArrayList<DatosCentroAcopioEntity> lista_datos_ca = new ArrayList<>();
         for(ProveedorEntity proveedor: proveedores){
@@ -92,18 +102,31 @@ public class DatosCentroAcopioService {
         datos_centro_acopio.setTotal_kls_leche(total_kls_leche);
     }
 
-    public void calcularVariacionesDatosCA(DatosCentroAcopioEntity datos_centro_acopio) {
+    public void calcularVariacionesDatosCA(DatosCentroAcopioEntity datos_centro_acopio) throws Exception{
         Integer variacion_leche;
         Integer variacion_grasa;
         Integer variacion_solido_total;
         GrasaSolidoTotalEntity grasa_st = datos_centro_acopio.getGrasa_solido_total();
-        //Verificar si existen estos datos, sino existem entonces ver si se encuentran los datos para realizar
-        // el calculo, de este.
-        DatosCentroAcopioEntity datos_ca_anterior = obtenerDatosCAPorProveedorQuincena(datos_centro_acopio.getProveedor(), datos_centro_acopio.getQuincena().obtenerQuincenaAnterior());
-        GrasaSolidoTotalEntity grasa_st_anterior = datos_ca_anterior.getGrasa_solido_total();
-        variacion_leche = (datos_centro_acopio.getTotal_kls_leche()/datos_ca_anterior.getTotal_kls_leche() - 1) * 100;
-        variacion_grasa = (grasa_st.getPorcentaje_grasa()/grasa_st_anterior.getPorcentaje_grasa() - 1) * 100;
-        variacion_solido_total = (grasa_st.getPorcentaje_solido_total()/grasa_st_anterior.getPorcentaje_solido_total() - 1) * 100;
+        QuincenaEntity quincena_anterior = datos_centro_acopio.getQuincena().obtenerQuincenaAnterior();
+        try {
+            DatosCentroAcopioEntity datos_ca_anterior = obtenerDatosCAPorProveedorQuincena(datos_centro_acopio.getProveedor(), quincena_anterior);
+            GrasaSolidoTotalEntity grasa_st_anterior = datos_ca_anterior.getGrasa_solido_total();
+            variacion_leche = (datos_centro_acopio.getTotal_kls_leche() / datos_ca_anterior.getTotal_kls_leche() - 1) * 100;
+            variacion_grasa = (grasa_st.getPorcentaje_grasa() / grasa_st_anterior.getPorcentaje_grasa() - 1) * 100;
+            variacion_solido_total = (grasa_st.getPorcentaje_solido_total() / grasa_st_anterior.getPorcentaje_solido_total() - 1) * 100;
+        }
+        catch (Exception e){
+            //No existen datos del centro acopio anteriormente.
+            if(acopio_leche_service.existenAcopiosLechePorQuincena(quincena_anterior) ||
+               grasa_solido_total_service.existeGrasaSolidoTotalPorQuincena(quincena_anterior)){
+                throw new Exception("Existen pagos del centro de acopio no calculados para la quincena anterior");
+            }
+            else{
+                variacion_leche = 0;
+                variacion_grasa = 0;
+                variacion_solido_total = 0;
+            }
+        }
         datos_centro_acopio.setVariacion_leche(variacion_leche);
         datos_centro_acopio.setVariacion_grasa(variacion_grasa);
         datos_centro_acopio.setVariacion_solido_total(variacion_solido_total);

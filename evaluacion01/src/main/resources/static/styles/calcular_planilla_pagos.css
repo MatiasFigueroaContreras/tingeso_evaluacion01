@@ -1,0 +1,50 @@
+.title hr {
+    width: 480px;
+}
+
+.top-content {
+    margin-top: 2vh;
+    margin-bottom: 15px;
+}
+
+.top-content .select-quincena {
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.top-content .select-quincena select {
+    height: 36px;
+    border: 2px solid #181818;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 8px;
+}
+
+.top-content .select-quincena select:first-child {
+    border-radius: 20px 0 0 20px;
+    min-width: 120px;
+}
+
+.top-content .select-quincena select:nth-child(2) {
+    min-width: 150px;
+}
+
+.top-content .select-quincena select:nth-child(3) {
+    min-width: 150px;
+}
+
+.top-content .select-quincena button {
+    width: 120px;
+    height: 36px;
+    background: #E27120;
+    border: 2px solid #181818;
+    border-radius: 0px 20px 20px 0px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding-right: 12px;
+    cursor: pointer;
+}
+
+.top-content .select-quincena button:hover {
+    background: #ee7722;
+}

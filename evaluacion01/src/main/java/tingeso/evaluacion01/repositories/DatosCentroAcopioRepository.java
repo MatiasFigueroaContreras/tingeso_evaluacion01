@@ -9,6 +9,6 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import java.util.Optional;
 
 @Repository
-public interface DatosCentroAcopioRepository extends JpaRepository<DatosCentroAcopioEntity, Long> {
+public interface DatosCentroAcopioRepository extends JpaRepository<DatosCentroAcopioEntity, String> {
     Optional<DatosCentroAcopioEntity> findByProveedorAndQuincena(ProveedorEntity proveedor, QuincenaEntity quincena);
 }

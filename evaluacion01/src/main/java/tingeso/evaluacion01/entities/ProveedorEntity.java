@@ -18,4 +18,8 @@ public class ProveedorEntity {
     private String nombre;
     private String categoria;
     private String retencion;
+
+    public boolean estaAfectoARetencion(){
+        return retencion.equals("Si");
+    }
 }

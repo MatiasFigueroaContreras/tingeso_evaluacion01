@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AcopioLecheRepository extends JpaRepository<AcopioLecheEntity, String> {
-    public List<AcopioLecheEntity> findAllByProveedorAndQuincena(ProveedorEntity proveedor, QuincenaEntity quincena);
+    List<AcopioLecheEntity> findAllByProveedorAndQuincena(ProveedorEntity proveedor, QuincenaEntity quincena);
+    boolean existsByQuincena(QuincenaEntity quincena);
 }

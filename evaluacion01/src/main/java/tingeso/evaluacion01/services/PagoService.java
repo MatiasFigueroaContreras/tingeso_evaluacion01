@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tingeso.evaluacion01.entities.DatosCentroAcopioEntity;
 import tingeso.evaluacion01.entities.PagoEntity;
+import tingeso.evaluacion01.entities.ProveedorEntity;
+import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.PagoRepository;
 
 import java.util.ArrayList;
@@ -22,7 +24,12 @@ public class PagoService {
     Double RETENCION = 0.13;
     Integer PAGA_RETENCION = 950000;
 
+    public boolean existenPagosPorQuincena(QuincenaEntity quincena){
+        return pago_repository.existsByQuincena(quincena);
+    }
+
     public void guardarPago(PagoEntity pago){
+        pago.setId(pago.getProveedor().getCodigo() + "-" + pago.getQuincena().toString());
         pago_repository.save(pago);
     }
 
@@ -34,6 +41,9 @@ public class PagoService {
 
     public PagoEntity calcularPago(DatosCentroAcopioEntity datos_centro_acopio){
         PagoEntity pago = new PagoEntity();
+        pago.setProveedor(datos_centro_acopio.getProveedor());
+        pago.setQuincena(datos_centro_acopio.getQuincena());
+        pago.setDatos_centro_acopio(datos_centro_acopio);
         pago.setPago_leche(calcularPagoLeche(datos_centro_acopio));
         pago.setPago_grasa(calcularPagoGrasa(datos_centro_acopio));
         pago.setPago_solido_total(calcularPagoSolidoTotal(datos_centro_acopio));
@@ -45,9 +55,6 @@ public class PagoService {
         pago.setPago_total(pago.getPagoAcopioLeche() - pago.getDescuentos());
         pago.setMonto_retencion(calcularMontoRetencion(pago));
         pago.setMonto_final(pago.getPago_total() - pago.getMonto_retencion());
-        pago.setProveedor(datos_centro_acopio.getProveedor());
-        pago.setQuincena(datos_centro_acopio.getQuincena());
-        pago.setDatos_centro_acopio(datos_centro_acopio);
         return pago;
     }
 
@@ -173,7 +180,8 @@ public class PagoService {
     private Integer calcularMontoRetencion(PagoEntity pago){
         Integer pago_total = pago.getPago_total();
         Integer monto_retencion = 0;
-        if(pago_total > PAGA_RETENCION){
+        ProveedorEntity proveedor = pago.getProveedor();
+        if(pago_total > PAGA_RETENCION && proveedor.estaAfectoARetencion()){
             monto_retencion = (int) Math.floor(RETENCION * pago_total);
         }
 

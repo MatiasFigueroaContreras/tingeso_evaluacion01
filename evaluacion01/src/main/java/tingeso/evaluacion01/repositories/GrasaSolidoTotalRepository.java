@@ -8,8 +8,10 @@ import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GrasaSolidoTotalRepository extends JpaRepository<GrasaSolidoTotalEntity, String> {
-    public GrasaSolidoTotalEntity findByProveedorAndQuincena(ProveedorEntity proveedor, QuincenaEntity quincena);
+    Optional<GrasaSolidoTotalEntity> findByProveedorAndQuincena(ProveedorEntity proveedor, QuincenaEntity quincena);
+    boolean existsByQuincena(QuincenaEntity quincena);
 }

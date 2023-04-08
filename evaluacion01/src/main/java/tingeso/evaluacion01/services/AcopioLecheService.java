@@ -13,6 +13,9 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.AcopioLecheRepository;
 
 import lombok.Generated;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,7 +29,8 @@ public class AcopioLecheService {
 
     public void guardarAcopioLeche(AcopioLecheEntity acopio_leche){
         String codigo_proveedor = acopio_leche.getProveedor().getCodigo();
-        String fecha = acopio_leche.getFecha().toString();
+        DateFormat date_format = new SimpleDateFormat("yyyy/MM/dd");
+        String fecha = date_format.format(acopio_leche.getFecha());
         String turno = acopio_leche.getTurno();
         String id = codigo_proveedor + "-" + fecha + "-" + turno;
         acopio_leche.setId(id);
@@ -41,6 +45,10 @@ public class AcopioLecheService {
 
     public ArrayList<AcopioLecheEntity> obtenerAcopiosLechePorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
         return (ArrayList<AcopioLecheEntity>) acopio_leche_repository.findAllByProveedorAndQuincena(proveedor, quincena);
+    }
+
+    public boolean existenAcopiosLechePorQuincena(QuincenaEntity quincena){
+        return acopio_leche_repository.existsByQuincena(quincena);
     }
 
     public void validarDatosAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{

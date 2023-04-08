@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class DatosCentroAcopioEntity {
     @Id
-    @SequenceGenerator(name = "centro_acopio_sequence", sequenceName = "centro_acopio_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "centro_acopio_sequence")
-    private Long id;
+    private String id;
     private Integer dias_envio_m_t;
     private Integer dias_envio_m;
     private Integer dias_envio_t;

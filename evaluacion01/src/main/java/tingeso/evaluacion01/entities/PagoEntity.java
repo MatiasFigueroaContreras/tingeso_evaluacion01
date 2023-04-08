@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class PagoEntity {
     @Id
-    @SequenceGenerator(name = "pago_sequence", sequenceName = "pago_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pago_sequence")
-    private Long id;
+    private String id;
     private Integer pago_leche;
     private Integer pago_grasa;
     private Integer pago_solido_total;

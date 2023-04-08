@@ -23,6 +23,13 @@ public class QuincenaEntity {
     private Integer mes;
     private Integer numero;
 
+    public QuincenaEntity(Integer year, Integer mes, Integer numero){
+        this.year = year;
+        this.mes = mes;
+        this.numero = numero;
+        this.id = toString();
+    }
+
     public String toString(){
         String mes_formateado = mes.toString();
         if(mes_formateado.length() == 1){
