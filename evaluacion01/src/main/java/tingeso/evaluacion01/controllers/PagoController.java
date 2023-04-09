@@ -2,6 +2,7 @@ package tingeso.evaluacion01.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,8 @@ public class PagoController {
             redirect_attr.addFlashAttribute("message",
                             "Estos pagos ya fueron calculados")
                     .addFlashAttribute("class", "informative-alert");
+            ArrayList<PagoEntity> pagos = pago_service.obtenerPagosPorQuincena(quincena);
+            redirect_attr.addFlashAttribute("pagos", pagos);
         }
         else if(datos_ca_service.existenDatosCAParaCalculoPorQuincena(quincena)){
             try {
@@ -44,6 +47,7 @@ public class PagoController {
                 pago_service.guardarPagos(pagos);
                 redirect_attr.addFlashAttribute("message", "Planilla de pagos calculada!")
                         .addFlashAttribute("class", "success-alert");
+                redirect_attr.addFlashAttribute("pagos", pagos);
             } catch (Exception e) {
                 redirect_attr.addFlashAttribute("message", e.getMessage())
                         .addFlashAttribute("class", "error-alert");
@@ -61,5 +65,15 @@ public class PagoController {
     @GetMapping("/planilla-pagos/calcular")
     public String calcularPlanillaPagosPage(){
         return "calcular_planilla_pagos";
+    }
+
+    @GetMapping("/planilla-pagos")
+    public String planillaPagosPage(Model model){
+        ArrayList<PagoEntity> pagos = pago_service.obtenerPagos();
+        model.addAttribute("pagos", pagos);
+        if(pagos.isEmpty()){
+            model.addAttribute("message", "Aun no se han calculado pagos");
+        }
+        return "planilla_pagos";
     }
 }

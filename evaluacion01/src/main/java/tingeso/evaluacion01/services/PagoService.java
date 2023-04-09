@@ -24,6 +24,14 @@ public class PagoService {
     Double RETENCION = 0.13;
     Integer PAGA_RETENCION = 950000;
 
+    public ArrayList<PagoEntity> obtenerPagos(){
+        return (ArrayList<PagoEntity>) pago_repository.findAllByOrderByQuincenaDescProveedorCodigoAsc();
+    }
+
+    public ArrayList<PagoEntity> obtenerPagosPorQuincena(QuincenaEntity quincena){
+        return (ArrayList<PagoEntity>) pago_repository.findAllByQuincena(quincena);
+    }
+
     public boolean existenPagosPorQuincena(QuincenaEntity quincena){
         return pago_repository.existsByQuincena(quincena);
     }

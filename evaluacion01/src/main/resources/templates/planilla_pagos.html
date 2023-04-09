@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8" />
-        <title>Calcular Planilla de Pagos</title>
+        <title>Planilla de Pagos</title>
         <link
             rel="stylesheet"
             href="../static/styles/navbar.css"
@@ -17,9 +17,9 @@
         />
         <link
             rel="stylesheet"
-            href="../static/styles/calcular_planilla_pagos.css"
+            href="../static/styles/planilla_pagos.css"
             type="text/css"
-            th:href="@{/styles/calcular_planilla_pagos.css}"
+            th:href="@{/styles/planilla_pagos.css}"
         />
     </head>
     <body>
@@ -45,10 +45,10 @@
                 </div>
                 <ul class="dropdown-content">
                     <li>
-                        <a href="/planilla-pagos">Mostrar planilla de pagos</a>
+                        <a class="link-active" href="/planilla-pagos">Mostrar planilla de pagos</a>
                     </li>
                     <li>
-                        <a class="link-active" href="/planilla-pagos/calcular"
+                        <a href="/planilla-pagos/calcular"
                             >Calcular planilla de pagos</a
                         >
                     </li>
@@ -83,33 +83,15 @@
         </header>
         <div class="main">
             <div class="title">
-                <h3>Calcular Planilla de Pagos</h3>
+                <h3>Planilla de Pagos</h3>
                 <hr />
             </div>
             <div
-                th:class="${class}"
+                th:class="informative-alert"
                 th:text="${message}"
                 th:if="${message}"
             ></div>
-            <div class="top-content">
-                <form
-                    class="select-quincena"
-                    th:action="@{/planilla-pagos/calcular}"
-                    method="POST"
-                >
-                    <select name="year" id="year" required>
-                        <option value="" disabled selected>Año</option>
-                    </select>
-                    <select name="mes" id="mes" required>
-                        <option value="" disabled selected>Mes</option>
-                    </select>
-                    <select name="quincena" id="quincena" required>
-                        <option value="" disabled selected>Quincena</option>
-                    </select>
-                    <button type="submit">Calcular</button>
-                </form>
-            </div>
-            <table th:if="${pagos}"  class="data-table">
+            <table class="data-table">
                 <thead>
                     <tr class="first-header">
                         <th colspan="1"></th>
@@ -149,19 +131,35 @@
                         <td th:text="${pago.quincena}"></td>
                         <td th:text="${pago.proveedor.codigo}"></td>
                         <td th:text="${pago.proveedor.nombre}"></td>
-                        <td th:text="${pago.datos_centro_acopio.total_kls_leche}"></td>
-                        <td th:text="${pago.datos_centro_acopio.dias_envio_m_t + 
+                        <td
+                            th:text="${pago.datos_centro_acopio.total_kls_leche}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.dias_envio_m_t + 
                                        pago.datos_centro_acopio.dias_envio_m + 
-                                       pago.datos_centro_acopio.dias_envio_t}"></td>
-                        <td th:text="${pago.datos_centro_acopio.total_kls_leche /
+                                       pago.datos_centro_acopio.dias_envio_t}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.total_kls_leche /
                                        (pago.datos_centro_acopio.dias_envio_m_t + 
                                        pago.datos_centro_acopio.dias_envio_m + 
-                                       pago.datos_centro_acopio.dias_envio_t)}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_leche}"></td>
-                        <td th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_grasa}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_grasa}"></td>
-                        <td th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_solido_total}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_solido_total}"></td>
+                                       pago.datos_centro_acopio.dias_envio_t)}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.variacion_leche}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_grasa}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.variacion_grasa}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_solido_total}"
+                        ></td>
+                        <td
+                            th:text="${pago.datos_centro_acopio.variacion_solido_total}"
+                        ></td>
                         <td th:text="${pago.pago_leche}"></td>
                         <td th:text="${pago.pago_grasa}"></td>
                         <td th:text="${pago.pago_solido_total}"></td>
@@ -177,9 +175,4 @@
             </table>
         </div>
     </body>
-    <script
-        type="text/javascript"
-        src="../static/scripts/ingresar_quincena.js"
-        th:src="@{/scripts/ingresar_quincena.js}"
-    ></script>
 </html>

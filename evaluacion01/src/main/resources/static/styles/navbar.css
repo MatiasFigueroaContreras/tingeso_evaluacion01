@@ -29,7 +29,7 @@
 }
 
 .dropdown-header a {
-    width: 144px;
+    max-width: 146px;
     text-align: end;
 }
 
