@@ -13,7 +13,6 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.services.AcopioLecheService;
 import tingeso.evaluacion01.services.QuincenaService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 @Controller
@@ -33,7 +32,7 @@ public class AcopioLecheController {
         try {
             ArrayList<AcopioLecheEntity> acopios_leche = acopio_leche_service.leerExcel(file);
             QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            acopio_leche_service.validarDatosAcopioLecheQuincena(acopios_leche, quincena);
+            acopio_leche_service.validarListaAcopioLecheQuincena(acopios_leche, quincena);
             acopio_leche_service.guardarAcopiosLeches(acopios_leche);
             redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
                     .addFlashAttribute("class", "success-alert");

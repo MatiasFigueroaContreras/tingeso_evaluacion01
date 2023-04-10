@@ -11,8 +11,18 @@ import java.util.Arrays;
 public class ProveedorService {
     @Autowired
     ProveedorRepository proveedor_repository;
-
+    private String CATEGORIAS_VALIDAS[] = {"A", "B", "C", "D"};
     public void registrarProveedor(String codigo, String nombre, String categoria, String retencion) throws  Exception{
+        validarDatosProveedor(codigo, categoria, retencion);
+        ProveedorEntity proveedor = new ProveedorEntity();
+        proveedor.setCodigo(codigo);
+        proveedor.setNombre(nombre);
+        proveedor.setCategoria(categoria);
+        proveedor.setRetencion(retencion);
+        proveedor_repository.save(proveedor);
+    }
+
+    public void validarDatosProveedor(String codigo, String categoria, String retencion) throws Exception {
         //Verificacion de un codigo correcto (5 digitos numericos)
         if(codigo.length() != 5){
             throw new Exception("El codigo tiene que ser de 5 digitos numericos");
@@ -27,8 +37,7 @@ public class ProveedorService {
             throw new Exception("El codigo tiene que ser de 5 digitos numericos");
         }
         //Verificacion de categorias validas establecidas
-        String categorias_validas[] = {"A", "B", "C", "D"};
-        if(!Arrays.asList(categorias_validas).contains(categoria)){
+        if(!Arrays.asList(CATEGORIAS_VALIDAS).contains(categoria)){
             throw new Exception("La categoria ingresada no es valida");
         }
         //Verificacion de valores validos para retencion
@@ -39,13 +48,6 @@ public class ProveedorService {
         if(proveedor_repository.findById(codigo).isPresent()){
             throw new Exception("El proveedor ya se encuentra registrado");
         }
-
-        ProveedorEntity proveedor = new ProveedorEntity();
-        proveedor.setCodigo(codigo);
-        proveedor.setNombre(nombre);
-        proveedor.setCategoria(categoria);
-        proveedor.setRetencion(retencion);
-        proveedor_repository.save(proveedor);
     }
 
     public ArrayList<ProveedorEntity> obtenerProveedores(){

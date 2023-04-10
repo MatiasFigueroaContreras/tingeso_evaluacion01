@@ -51,28 +51,33 @@ public class AcopioLecheService {
         return acopio_leche_repository.existsByQuincena(quincena);
     }
 
-    public void validarDatosAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{
+    public void validarListaAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{
         for (AcopioLecheEntity acopio_leche : acopios_leche) {
-            String turno = acopio_leche.getTurno();
-            Integer kls_leche = acopio_leche.getCantidad_leche();
-            Date fecha = acopio_leche.getFecha();
-            ProveedorEntity proveedor = acopio_leche.getProveedor();
-            if(!turno.equals("M") && !turno.equals("T")){
-                throw new Exception("Algun turno no es valido, debe ser M o T");
-            }
-
-            if(kls_leche < 0){
-                throw new Exception("Los kilos de leche tienen que ser positivos");
-            }
-
-            if(!quincena.estaDentroQuincena(fecha)){
-                throw new Exception("Las fechas ingresadas tienen que coincidir con la quincena");
-            }
-
-            if(!proveedor_service.existeProveedor(proveedor)) {
-                throw new Exception("Los proveedores tienen que estar registrados");
-            }
             acopio_leche.setQuincena(quincena);
+            validarAcopioLeche(acopio_leche);
+        }
+    }
+
+    public void validarAcopioLeche(AcopioLecheEntity acopio_leche) throws Exception{
+        String turno = acopio_leche.getTurno();
+        Integer kls_leche = acopio_leche.getCantidad_leche();
+        Date fecha = acopio_leche.getFecha();
+        ProveedorEntity proveedor = acopio_leche.getProveedor();
+        QuincenaEntity quincena = acopio_leche.getQuincena();
+        if(!turno.equals("M") && !turno.equals("T")){
+            throw new Exception("Algun turno no es valido, debe ser M o T");
+        }
+
+        if(kls_leche < 0){
+            throw new Exception("Los kilos de leche tienen que ser positivos");
+        }
+
+        if(!quincena.estaDentroQuincena(fecha)){
+            throw new Exception("Las fechas ingresadas tienen que coincidir con la quincena");
+        }
+
+        if(!proveedor_service.existeProveedor(proveedor)) {
+            throw new Exception("Los proveedores tienen que estar registrados");
         }
     }
 
