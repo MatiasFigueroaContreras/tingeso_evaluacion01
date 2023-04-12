@@ -39,28 +39,31 @@ public class GrasaSolidoTotalService {
         }
     }
 
-    public void validarDatosGrasasSolidosTotales(ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales) throws Exception{
+    public void validarListaGrasasSolidosTotales(ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales) throws Exception{
         for (GrasaSolidoTotalEntity grasa_solido_total : grasas_solidos_totales) {
-            ProveedorEntity proveedor = grasa_solido_total.getProveedor();
-            Integer porcentaje_grasa = grasa_solido_total.getPorcentaje_grasa();
-            Integer porcentaje_solido_total = grasa_solido_total.getPorcentaje_solido_total();
-            if(porcentaje_grasa < 0 || porcentaje_grasa > 100){
-                throw new Exception("El porcentaje de grasa no es valido");
-            }
+            validarGrasaSolidoTotal(grasa_solido_total);
+        }
+    }
 
-            if(porcentaje_solido_total < 0 || porcentaje_solido_total > 100){
-                throw new Exception("El porcentaje de solido total no es valido");
-            }
+    public void validarGrasaSolidoTotal(GrasaSolidoTotalEntity grasa_solido_total) throws Exception {
+        ProveedorEntity proveedor = grasa_solido_total.getProveedor();
+        Integer porcentaje_grasa = grasa_solido_total.getPorcentaje_grasa();
+        Integer porcentaje_solido_total = grasa_solido_total.getPorcentaje_solido_total();
+        if(porcentaje_grasa < 0 || porcentaje_grasa > 100){
+            throw new Exception("El porcentaje de grasa no es valido");
+        }
 
-            if(!proveedor_service.existeProveedor(proveedor)) {
-                throw new Exception("Los proveedores tienen que estar registrados");
-            }
+        if(porcentaje_solido_total < 0 || porcentaje_solido_total > 100){
+            throw new Exception("El porcentaje de solido total no es valido");
+        }
+
+        if(!proveedor_service.existeProveedor(proveedor)) {
+            throw new Exception("Los proveedores tienen que estar registrados");
         }
     }
 
     public GrasaSolidoTotalEntity obtenerGrasaSolidoTotalPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
-        Optional<GrasaSolidoTotalEntity> prueba = grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena);
-        return prueba.get();
+        return grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena).get();
     }
 
     public boolean existeGrasaSolidoTotalPorQuincena(QuincenaEntity quincena){

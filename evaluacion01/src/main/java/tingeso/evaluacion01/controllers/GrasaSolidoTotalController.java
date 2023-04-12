@@ -32,7 +32,7 @@ public class GrasaSolidoTotalController {
         try {
             ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = grasa_solido_total_service.leerExcel(file);
             QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            grasa_solido_total_service.validarDatosGrasasSolidosTotales(grasas_solidos_totales);
+            grasa_solido_total_service.validarListaGrasasSolidosTotales(grasas_solidos_totales);
             grasa_solido_total_service.guardarGrasasSolidosTotales(grasas_solidos_totales, quincena);
             redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
                     .addFlashAttribute("class", "success-alert");

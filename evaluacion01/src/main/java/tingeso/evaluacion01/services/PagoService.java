@@ -76,13 +76,13 @@ public class PagoService {
         return pagos;
     }
 
-    private Integer calcularPagoLeche(DatosCentroAcopioEntity datos_centro_acopio){
+    public Integer calcularPagoLeche(DatosCentroAcopioEntity datos_centro_acopio){
         String categoria_proveedor = datos_centro_acopio.getProveedor().getCategoria();
         Integer total_kls_leche = datos_centro_acopio.getTotal_kls_leche();
         return PAGO_POR_KLS_LECHE.get(categoria_proveedor) * total_kls_leche;
     }
 
-    private Integer calcularPagoGrasa(DatosCentroAcopioEntity datos_centro_acopio){
+    public Integer calcularPagoGrasa(DatosCentroAcopioEntity datos_centro_acopio){
         Integer porcentaje_grasa = datos_centro_acopio.getGrasa_solido_total().getPorcentaje_grasa();
         Integer total_kls_leche = datos_centro_acopio.getTotal_kls_leche();
         Integer pago;
@@ -99,7 +99,7 @@ public class PagoService {
         return pago;
     }
 
-    private Integer calcularPagoSolidoTotal(DatosCentroAcopioEntity datos_centro_acopio){
+    public Integer calcularPagoSolidoTotal(DatosCentroAcopioEntity datos_centro_acopio){
         Integer porcentaje_solido_total = datos_centro_acopio.getGrasa_solido_total().getPorcentaje_solido_total();
         Integer total_kls_leche = datos_centro_acopio.getTotal_kls_leche();
         Integer pago;
@@ -119,7 +119,7 @@ public class PagoService {
         return pago;
     }
 
-    private Integer calcularBonificacionPorFrecuencia(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_leche){
+    public Integer calcularBonificacionPorFrecuencia(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_leche){
         Integer pago = 0;
         if(datos_centro_acopio.getDias_envio_m_t() > 10){
             pago = (int) Math.floor(0.20 * pago_leche);
@@ -134,7 +134,7 @@ public class PagoService {
         return pago;
     }
 
-    private Integer calcularDctoVariacionLeche(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
+    public Integer calcularDctoVariacionLeche(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
         Integer variacion_negativa_leche = datos_centro_acopio.getVariacion_leche() * -1;
         Integer descuento = 0;
 
@@ -151,7 +151,7 @@ public class PagoService {
         return descuento;
     }
 
-    private Integer calcularDctoVariacionGrasa(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
+    public Integer calcularDctoVariacionGrasa(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
         Integer variacion_negativa_grasa = datos_centro_acopio.getVariacion_grasa() * -1;
         Integer descuento = 0;
 
@@ -168,7 +168,7 @@ public class PagoService {
         return descuento;
     }
 
-    private Integer calcularDctoVariacionSolidoTotal(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
+    public Integer calcularDctoVariacionSolidoTotal(DatosCentroAcopioEntity datos_centro_acopio, Integer pago_acopio_leche){
         Integer variacion_negativa_solido_total = datos_centro_acopio.getVariacion_solido_total() * -1;
         Integer descuento = 0;
 
@@ -185,7 +185,7 @@ public class PagoService {
         return descuento;
     }
 
-    private Integer calcularMontoRetencion(PagoEntity pago){
+    public Integer calcularMontoRetencion(PagoEntity pago){
         Integer pago_total = pago.getPago_total();
         Integer monto_retencion = 0;
         ProveedorEntity proveedor = pago.getProveedor();

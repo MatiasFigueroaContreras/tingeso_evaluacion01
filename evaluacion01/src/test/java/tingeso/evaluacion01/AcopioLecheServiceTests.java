@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import tingeso.evaluacion01.entities.AcopioLecheEntity;
 import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 public class AcopioLecheServiceTests {
     @Mock
     private AcopioLecheRepository acopio_leche_repository_mock;
@@ -61,7 +63,7 @@ public class AcopioLecheServiceTests {
     }
 
     @Test
-    //Test para verificar el funcionamiento de obtener acopios leche por quincena
+    //Test para verificar el funcionamiento de obtener acopios leche por proveedor y quincena
     public void testObtenerAcopiosLechePorProveedorQuincena(){
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);

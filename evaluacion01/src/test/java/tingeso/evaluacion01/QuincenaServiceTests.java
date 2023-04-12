@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.QuincenaRepository;
 import tingeso.evaluacion01.services.QuincenaService;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@SpringBootTest
 public class QuincenaServiceTests {
     @Mock
     private QuincenaRepository quincena_repository_mock;
