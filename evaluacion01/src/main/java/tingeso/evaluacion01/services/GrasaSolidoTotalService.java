@@ -13,113 +13,134 @@ import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.GrasaSolidoTotalRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class GrasaSolidoTotalService {
     @Autowired
-    GrasaSolidoTotalRepository grasa_solido_total_repository;
+    GrasaSolidoTotalRepository grasaSolidoTotalRepository;
     @Autowired
-    ProveedorService proveedor_service;
+    ProveedorService proveedorService;
 
-    public void guardarGrasaSolidoTotal(GrasaSolidoTotalEntity grasa_solido_total){
-        String codigo_proveedor = grasa_solido_total.getProveedor().getCodigo();
-        String quincena = grasa_solido_total.getQuincena().toString();
-        String id = codigo_proveedor + "-" + quincena;
-        grasa_solido_total.setId(id);
-        grasa_solido_total_repository.save(grasa_solido_total);
+    public void guardarGrasaSolidoTotal(GrasaSolidoTotalEntity grasaSolidoTotal) {
+        String codigoProveedor = grasaSolidoTotal.getProveedor().getCodigo();
+        String quincena = grasaSolidoTotal.getQuincena().toString();
+        String id = codigoProveedor + "-" + quincena;
+        grasaSolidoTotal.setId(id);
+        grasaSolidoTotalRepository.save(grasaSolidoTotal);
     }
 
-    public void guardarGrasasSolidosTotales(ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales, QuincenaEntity quincena) {
-        for (GrasaSolidoTotalEntity grasa_solido_total : grasas_solidos_totales) {
-            grasa_solido_total.setQuincena(quincena);
-            guardarGrasaSolidoTotal(grasa_solido_total);
+    public void guardarGrasasSolidosTotales(List<GrasaSolidoTotalEntity> grasasSolidosTotales, QuincenaEntity quincena) {
+        for (GrasaSolidoTotalEntity grasaSolidoTotal : grasasSolidosTotales) {
+            grasaSolidoTotal.setQuincena(quincena);
+            guardarGrasaSolidoTotal(grasaSolidoTotal);
         }
     }
 
-    public void validarListaGrasasSolidosTotales(ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales) throws Exception{
-        for (GrasaSolidoTotalEntity grasa_solido_total : grasas_solidos_totales) {
-            validarGrasaSolidoTotal(grasa_solido_total);
+    public void validarListaGrasasSolidosTotales(List<GrasaSolidoTotalEntity> grasasSolidosTotales) {
+        for (GrasaSolidoTotalEntity grasaSolidoTotal : grasasSolidosTotales) {
+            validarGrasaSolidoTotal(grasaSolidoTotal);
         }
     }
 
-    public void validarGrasaSolidoTotal(GrasaSolidoTotalEntity grasa_solido_total) throws Exception {
-        ProveedorEntity proveedor = grasa_solido_total.getProveedor();
-        Integer porcentaje_grasa = grasa_solido_total.getPorcentaje_grasa();
-        Integer porcentaje_solido_total = grasa_solido_total.getPorcentaje_solido_total();
-        if(porcentaje_grasa < 0 || porcentaje_grasa > 100){
-            throw new Exception("El porcentaje de grasa no es valido");
+    public void validarGrasaSolidoTotal(GrasaSolidoTotalEntity grasaSolidoTotal) {
+        ProveedorEntity proveedor = grasaSolidoTotal.getProveedor();
+        Integer porcentajeGrasa = grasaSolidoTotal.getPorcentajeGrasa();
+        Integer porcentajeSolidoTotal = grasaSolidoTotal.getPorcentajeSolidoTotal();
+        if (porcentajeGrasa < 0 || porcentajeGrasa > 100) {
+            throw new IllegalArgumentException("El porcentaje de grasa no es valido");
         }
 
-        if(porcentaje_solido_total < 0 || porcentaje_solido_total > 100){
-            throw new Exception("El porcentaje de solido total no es valido");
+        if (porcentajeSolidoTotal < 0 || porcentajeSolidoTotal > 100) {
+            throw new IllegalArgumentException("El porcentaje de solido total no es valido");
         }
 
-        if(!proveedor_service.existeProveedor(proveedor)) {
-            throw new Exception("Los proveedores tienen que estar registrados");
+        if (!proveedorService.existeProveedor(proveedor)) {
+            throw new IllegalArgumentException("Los proveedores tienen que estar registrados");
         }
     }
 
-    public GrasaSolidoTotalEntity obtenerGrasaSolidoTotalPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
-        return grasa_solido_total_repository.findByProveedorAndQuincena(proveedor, quincena).get();
+    public GrasaSolidoTotalEntity obtenerGrasaSolidoTotalPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) {
+        Optional<GrasaSolidoTotalEntity> grasaSolidoTotal =  grasaSolidoTotalRepository.findByProveedorAndQuincena(proveedor, quincena);
+        if(!grasaSolidoTotal.isPresent()){
+            throw new IllegalArgumentException("No existe datos de grasa y solido total para un proveedor dada la quincena ingresada");
+        }
+
+        return grasaSolidoTotal.get();
     }
 
-    public boolean existeGrasaSolidoTotalPorQuincena(QuincenaEntity quincena){
-        return grasa_solido_total_repository.existsByQuincena(quincena);
+    public boolean existeGrasaSolidoTotalPorQuincena(QuincenaEntity quincena) {
+        return grasaSolidoTotalRepository.existsByQuincena(quincena);
     }
 
     @Generated
-    public ArrayList<GrasaSolidoTotalEntity> leerExcel(MultipartFile file) throws Exception {
-        ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = new ArrayList<>();
+    public List<GrasaSolidoTotalEntity> leerExcel(MultipartFile file) {
+        List<GrasaSolidoTotalEntity> grasasSolidosTotales = new ArrayList<>();
         String filename = file.getOriginalFilename();
-        if(!filename.endsWith(".xlsx")){
-            throw new Exception("El archivo ingresado no es un .xlsx");
+
+        if (filename == null || !filename.endsWith(".xlsx")) {
+            throw new IllegalArgumentException("El archivo ingresado no es un .xlsx");
         }
-        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
+        XSSFWorkbook workbook;
+        try {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("El archivo ingresado no pudo ser leido");
+        }
         XSSFSheet worksheet = workbook.getSheetAt(0);
-        boolean row_verification = true;
-        for(Row row: worksheet){
-            if (row_verification)
-            {
-                row_verification = false;
+        boolean rowVerification = true;
+        for (Row row : worksheet) {
+            if (rowVerification) {
+                rowVerification = false;
                 continue;
             }
 
-            Iterator<Cell> cell_itr = row.iterator();
-            int i_cell = 0;
-            GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity();
+            Iterator<Cell> cellItr = row.iterator();
+            int iCell = 0;
+            GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity();
             ProveedorEntity proveedor = new ProveedorEntity();
-            while (cell_itr.hasNext()){
-                Cell cell = cell_itr.next();
-                try {
-                    switch (i_cell) {
-                        case 0 ->  {
-                            try {
-                                proveedor.setCodigo(cell.getStringCellValue());
-                            } catch (IllegalStateException e) {
-                                int codigo = (int) cell.getNumericCellValue();
-                                proveedor.setCodigo(Integer.toString(codigo));
-                            }
-                            break;
-                        }
-                        case 1 -> grasa_solido_total.setPorcentaje_grasa((int) cell.getNumericCellValue());
-                        case 2 -> grasa_solido_total.setPorcentaje_solido_total((int) cell.getNumericCellValue());
-                        default -> {
-                        }
-                    }
-                }catch (Exception e){
-                    throw new Exception("El Excel ingresado contiene datos no validos.");
-                }
-                i_cell++;
+            while (cellItr.hasNext()) {
+                Cell cell = cellItr.next();
+                setValueByCell(grasaSolidoTotal, proveedor, cell, iCell);
+                iCell++;
             }
-            if(i_cell == 3) {
-                grasa_solido_total.setProveedor(proveedor);
-                grasas_solidos_totales.add(grasa_solido_total);
+            if (iCell == 3) {
+                grasaSolidoTotal.setProveedor(proveedor);
+                grasasSolidosTotales.add(grasaSolidoTotal);
             }
         }
 
-        return grasas_solidos_totales;
+        return grasasSolidosTotales;
+    }
+
+    @Generated
+    private void setValueByCell(GrasaSolidoTotalEntity grasaSolidoTotal, ProveedorEntity proveedor, Cell cell, int iCell) {
+        try {
+            switch (iCell) {
+                case 0 -> proveedor.setCodigo(getCodigoValuByCell(cell));
+                case 1 -> grasaSolidoTotal.setPorcentajeGrasa((int) cell.getNumericCellValue());
+                case 2 -> grasaSolidoTotal.setPorcentajeSolidoTotal((int) cell.getNumericCellValue());
+                default -> {
+                    //No pasa por aca
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El Excel ingresado contiene datos no validos.");
+        }
+    }
+
+    @Generated
+    private String getCodigoValuByCell(Cell cell){
+        try {
+            return cell.getStringCellValue();
+        }
+        catch (IllegalStateException e) {
+            int codigo = (int) cell.getNumericCellValue();
+            return Integer.toString(codigo);
+        }
     }
 }

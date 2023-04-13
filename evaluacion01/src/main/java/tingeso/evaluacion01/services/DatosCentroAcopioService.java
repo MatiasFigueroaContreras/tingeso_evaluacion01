@@ -10,125 +10,128 @@ import java.util.*;
 @Service
 public class DatosCentroAcopioService {
     @Autowired
-    DatosCentroAcopioRepository datos_centro_acopio_repository;
+    DatosCentroAcopioRepository datosCentroAcopioRepository;
     @Autowired
-    AcopioLecheService acopio_leche_service;
+    AcopioLecheService acopioLecheService;
     @Autowired
-    GrasaSolidoTotalService grasa_solido_total_service;
+    GrasaSolidoTotalService grasaSolidoTotalService;
     @Autowired
-    ProveedorService proveedor_service;
+    ProveedorService proveedorService;
 
-    public void guardarDatosCA(DatosCentroAcopioEntity datos_centro_acopio){
-        String id = datos_centro_acopio.getProveedor().getCodigo() + "-" + datos_centro_acopio.getQuincena().toString();
-        datos_centro_acopio.setId(id);
-        datos_centro_acopio_repository.save(datos_centro_acopio);
+    public void guardarDatosCA(DatosCentroAcopioEntity datosCentroAcopio) {
+        String id = datosCentroAcopio.getProveedor().getCodigo() + "-" + datosCentroAcopio.getQuincena().toString();
+        datosCentroAcopio.setId(id);
+        datosCentroAcopioRepository.save(datosCentroAcopio);
     }
 
-    public void guardarListaDatosCA(ArrayList<DatosCentroAcopioEntity> lista_datos_ca){
-        for(DatosCentroAcopioEntity datos_ca: lista_datos_ca){
-            guardarDatosCA(datos_ca);
+    public void guardarListaDatosCA(List<DatosCentroAcopioEntity> listaDatosCa) {
+        for (DatosCentroAcopioEntity datosCa : listaDatosCa) {
+            guardarDatosCA(datosCa);
         }
     }
 
-    public DatosCentroAcopioEntity obtenerDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) throws Exception{
-        Optional<DatosCentroAcopioEntity> datos_ca = datos_centro_acopio_repository.findByProveedorAndQuincena(proveedor, quincena);
-        if(!datos_ca.isPresent()){
-            throw new Exception("No se encontraron los datos del centro de acopio, para el proveedor y quincena dados");
+    public DatosCentroAcopioEntity obtenerDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) {
+        Optional<DatosCentroAcopioEntity> datosCa = datosCentroAcopioRepository.findByProveedorAndQuincena(proveedor, quincena);
+        if (!datosCa.isPresent()) {
+            throw new IllegalArgumentException("No se encontraron los datos del centro de acopio, para el proveedor y quincena dados");
         }
-        return datos_ca.get();
+        return datosCa.get();
     }
 
-    public boolean existenDatosCAParaCalculoPorQuincena(QuincenaEntity quincena){
-        return  acopio_leche_service.existenAcopiosLechePorQuincena(quincena) &&
-                grasa_solido_total_service.existeGrasaSolidoTotalPorQuincena(quincena);
+    public boolean existenDatosCAParaCalculoPorQuincena(QuincenaEntity quincena) {
+        return acopioLecheService.existenAcopiosLechePorQuincena(quincena) &&
+                grasaSolidoTotalService.existeGrasaSolidoTotalPorQuincena(quincena);
     }
 
-    public DatosCentroAcopioEntity calcularDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) throws Exception {
-        DatosCentroAcopioEntity datos_centro_acopio = new DatosCentroAcopioEntity();
-        datos_centro_acopio.setProveedor(proveedor);
-        datos_centro_acopio.setQuincena(quincena);
-        calcularDatosAcopioLeche(datos_centro_acopio);
-        GrasaSolidoTotalEntity grasa_solido_total = grasa_solido_total_service.obtenerGrasaSolidoTotalPorProveedorQuincena(proveedor, quincena);
-        datos_centro_acopio.setGrasa_solido_total(grasa_solido_total);
-        calcularVariacionesDatosCA(datos_centro_acopio);
-        return datos_centro_acopio;
+    public DatosCentroAcopioEntity calcularDatosCAPorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) {
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setProveedor(proveedor);
+        datosCentroAcopio.setQuincena(quincena);
+        calcularDatosAcopioLeche(datosCentroAcopio);
+        GrasaSolidoTotalEntity grasaSolidoTotal;
+        if(datosCentroAcopio.getTotalKlsLeche() == 0){
+            //Se asigna 0 porcentajes si no han entregado datos para algun proveedor, considerando que este no envio leche.
+            grasaSolidoTotalService.guardarGrasaSolidoTotal(new GrasaSolidoTotalEntity("", 0, 0, proveedor, quincena));
+        }
+        grasaSolidoTotal = grasaSolidoTotalService.obtenerGrasaSolidoTotalPorProveedorQuincena(proveedor, quincena);
+        datosCentroAcopio.setGrasaSolidoTotal(grasaSolidoTotal);
+        calcularVariacionesDatosCA(datosCentroAcopio);
+        return datosCentroAcopio;
     }
 
-    public ArrayList<DatosCentroAcopioEntity> calcularDatosCAPorQuincena(QuincenaEntity quincena) throws Exception {
-        ArrayList<ProveedorEntity> proveedores = proveedor_service.obtenerProveedores();
-        ArrayList<DatosCentroAcopioEntity> lista_datos_ca = new ArrayList<>();
-        for(ProveedorEntity proveedor: proveedores){
-            DatosCentroAcopioEntity datos_ca_proveedor = calcularDatosCAPorProveedorQuincena(proveedor, quincena);
-            lista_datos_ca.add(datos_ca_proveedor);
+    public List<DatosCentroAcopioEntity> calcularDatosCAPorQuincena(QuincenaEntity quincena) {
+        List<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
+        List<DatosCentroAcopioEntity> listaDatosCa = new ArrayList<>();
+        for (ProveedorEntity proveedor : proveedores) {
+            DatosCentroAcopioEntity datosCaProveedor = calcularDatosCAPorProveedorQuincena(proveedor, quincena);
+            listaDatosCa.add(datosCaProveedor);
         }
 
-        return lista_datos_ca;
+        return listaDatosCa;
     }
 
-    public void calcularDatosAcopioLeche(DatosCentroAcopioEntity datos_centro_acopio){
-        ArrayList<AcopioLecheEntity> acopios_leche = acopio_leche_service.obtenerAcopiosLechePorProveedorQuincena(datos_centro_acopio.getProveedor(), datos_centro_acopio.getQuincena());
-        Integer n_dias_envio_m_t = 0;
-        Integer n_dias_envio_m = 0;
-        Integer n_dias_envio_t;
-        Integer total_kls_leche = 0;
-        HashMap<Integer, Boolean> dias_envios_m = new HashMap<>();
-        HashMap<Integer, Boolean> dias_envios_t = new HashMap<>();
-        for(AcopioLecheEntity acopio_leche : acopios_leche){
+    public void calcularDatosAcopioLeche(DatosCentroAcopioEntity datosCentroAcopio) {
+        List<AcopioLecheEntity> acopiosLeche = acopioLecheService.obtenerAcopiosLechePorProveedorQuincena(datosCentroAcopio.getProveedor(), datosCentroAcopio.getQuincena());
+        Integer nDiasEnvioMT = 0;
+        Integer nDiasEnvioM = 0;
+        Integer nDiasEnvioT;
+        Integer totalKlsLeche = 0;
+        HashMap<Integer, Boolean> diasEnviosM = new HashMap<>();
+        HashMap<Integer, Boolean> diasEnviosT = new HashMap<>();
+        for (AcopioLecheEntity acopioLeche : acopiosLeche) {
             Calendar calendar = new GregorianCalendar();
-            calendar.setTime(acopio_leche.getFecha());
+            calendar.setTime(acopioLeche.getFecha());
             Integer dia = calendar.get(Calendar.DAY_OF_MONTH);
-            String turno = acopio_leche.getTurno();
-            if(turno.equals("M")){
-                dias_envios_m.put(dia, Boolean.TRUE);
+            String turno = acopioLeche.getTurno();
+            if (turno.equals("M")) {
+                diasEnviosM.put(dia, Boolean.TRUE);
+            } else {
+                diasEnviosT.put(dia, Boolean.TRUE);
             }
-            else {
-                dias_envios_t.put(dia, Boolean.TRUE);
-            }
-            total_kls_leche += acopio_leche.getCantidad_leche();
+            totalKlsLeche += acopioLeche.getCantidadLeche();
         }
 
-        for(Integer dia_envio_m: dias_envios_m.keySet()){
-            if(dias_envios_t.containsKey(dia_envio_m)){
-                n_dias_envio_m_t++;
-            }
-            else {
-                n_dias_envio_m++;
+        for (Integer diaEnvioM : diasEnviosM.keySet()) {
+            if (diasEnviosT.containsKey(diaEnvioM)) {
+                nDiasEnvioMT++;
+            } else {
+                nDiasEnvioM++;
             }
         }
-        n_dias_envio_t = dias_envios_t.size() -  n_dias_envio_m_t;
-        datos_centro_acopio.setDias_envio_m_t(n_dias_envio_m_t);
-        datos_centro_acopio.setDias_envio_m(n_dias_envio_m);
-        datos_centro_acopio.setDias_envio_t(n_dias_envio_t);
-        datos_centro_acopio.setTotal_kls_leche(total_kls_leche);
+        nDiasEnvioT = diasEnviosT.size() - nDiasEnvioMT;
+        datosCentroAcopio.setDiasEnvioMyT(nDiasEnvioMT);
+        datosCentroAcopio.setDiasEnvioM(nDiasEnvioM);
+        datosCentroAcopio.setDiasEnvioT(nDiasEnvioT);
+        datosCentroAcopio.setTotalKlsLeche(totalKlsLeche);
     }
 
-    public void calcularVariacionesDatosCA(DatosCentroAcopioEntity datos_centro_acopio) throws Exception{
-        Integer variacion_leche;
-        Integer variacion_grasa;
-        Integer variacion_solido_total;
-        GrasaSolidoTotalEntity grasa_st = datos_centro_acopio.getGrasa_solido_total();
-        QuincenaEntity quincena_anterior = datos_centro_acopio.getQuincena().obtenerQuincenaAnterior();
+    public void calcularVariacionesDatosCA(DatosCentroAcopioEntity datosCentroAcopio) {
+        Integer variacionLeche = 0;
+        Integer variacionGrasa = 0;
+        Integer variacionSolidoTotal = 0;
+        GrasaSolidoTotalEntity grasaSolidoTotal = datosCentroAcopio.getGrasaSolidoTotal();
+        QuincenaEntity quincenaAnterior = datosCentroAcopio.getQuincena().obtenerQuincenaAnterior();
         try {
-            DatosCentroAcopioEntity datos_ca_anterior = obtenerDatosCAPorProveedorQuincena(datos_centro_acopio.getProveedor(), quincena_anterior);
-            GrasaSolidoTotalEntity grasa_st_anterior = datos_ca_anterior.getGrasa_solido_total();
-            variacion_leche = (datos_centro_acopio.getTotal_kls_leche() / datos_ca_anterior.getTotal_kls_leche() - 1) * 100;
-            variacion_grasa = (grasa_st.getPorcentaje_grasa() / grasa_st_anterior.getPorcentaje_grasa() - 1) * 100;
-            variacion_solido_total = (grasa_st.getPorcentaje_solido_total() / grasa_st_anterior.getPorcentaje_solido_total() - 1) * 100;
-        }
-        catch (Exception e){
+            DatosCentroAcopioEntity datosCaAnterior = obtenerDatosCAPorProveedorQuincena(datosCentroAcopio.getProveedor(), quincenaAnterior);
+            GrasaSolidoTotalEntity grasaStAnterior = datosCaAnterior.getGrasaSolidoTotal();
+            if(datosCaAnterior.getTotalKlsLeche() != 0){
+                variacionLeche = (datosCentroAcopio.getTotalKlsLeche() / datosCaAnterior.getTotalKlsLeche() - 1) * 100;
+            }
+            if(grasaStAnterior.getPorcentajeGrasa() != 0){
+                variacionGrasa = (grasaSolidoTotal.getPorcentajeGrasa() / grasaStAnterior.getPorcentajeGrasa() - 1) * 100;
+            }
+            if(grasaStAnterior.getPorcentajeSolidoTotal() != 0){
+                variacionSolidoTotal = (grasaSolidoTotal.getPorcentajeSolidoTotal() / grasaStAnterior.getPorcentajeSolidoTotal() - 1) * 100;
+            }
+        } catch (Exception e) {
             //No existen datos del centro acopio anteriormente.
-            if(acopio_leche_service.existenAcopiosLechePorQuincena(quincena_anterior) ||
-               grasa_solido_total_service.existeGrasaSolidoTotalPorQuincena(quincena_anterior)){
-                throw new Exception("Existen pagos del centro de acopio no calculados para la quincena anterior");
-            }
-            else{
-                variacion_leche = 0;
-                variacion_grasa = 0;
-                variacion_solido_total = 0;
+            if (acopioLecheService.existenAcopiosLechePorQuincena(quincenaAnterior) ||
+                    grasaSolidoTotalService.existeGrasaSolidoTotalPorQuincena(quincenaAnterior)) {
+                throw new IllegalArgumentException("Existen pagos del centro de acopio no calculados para la quincena anterior");
             }
         }
-        datos_centro_acopio.setVariacion_leche(variacion_leche);
-        datos_centro_acopio.setVariacion_grasa(variacion_grasa);
-        datos_centro_acopio.setVariacion_solido_total(variacion_solido_total);
+        datosCentroAcopio.setVariacionLeche(variacionLeche);
+        datosCentroAcopio.setVariacionGrasa(variacionGrasa);
+        datosCentroAcopio.setVariacionSolidoTotal(variacionSolidoTotal);
     }
 }

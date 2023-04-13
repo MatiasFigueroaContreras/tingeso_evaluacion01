@@ -109,7 +109,7 @@
                     <button type="submit">Calcular</button>
                 </form>
             </div>
-            <table th:if="${pagos}"  class="data-table">
+            <table th:if="${pagos}" class="data-table">
                 <thead>
                     <tr class="first-header">
                         <th colspan="1"></th>
@@ -146,32 +146,43 @@
                 </thead>
                 <tbody>
                     <tr th:each="pago:${pagos}">
-                        <td th:text="${pago.quincena}"></td>
-                        <td th:text="${pago.proveedor.codigo}"></td>
-                        <td th:text="${pago.proveedor.nombre}"></td>
-                        <td th:text="${pago.datos_centro_acopio.total_kls_leche}"></td>
-                        <td th:text="${pago.datos_centro_acopio.dias_envio_m_t + 
-                                       pago.datos_centro_acopio.dias_envio_m + 
-                                       pago.datos_centro_acopio.dias_envio_t}"></td>
-                        <td th:text="${pago.datos_centro_acopio.total_kls_leche /
-                                       (pago.datos_centro_acopio.dias_envio_m_t + 
-                                       pago.datos_centro_acopio.dias_envio_m + 
-                                       pago.datos_centro_acopio.dias_envio_t)}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_leche}"></td>
-                        <td th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_grasa}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_grasa}"></td>
-                        <td th:text="${pago.datos_centro_acopio.grasa_solido_total.porcentaje_solido_total}"></td>
-                        <td th:text="${pago.datos_centro_acopio.variacion_solido_total}"></td>
-                        <td th:text="${pago.pago_leche}"></td>
-                        <td th:text="${pago.pago_grasa}"></td>
-                        <td th:text="${pago.pago_solido_total}"></td>
-                        <td th:text="${pago.bonificacion_frecuencia}"></td>
-                        <td th:text="${pago.dcto_variacion_leche}"></td>
-                        <td th:text="${pago.dcto_variacion_grasa}"></td>
-                        <td th:text="${pago.dcto_variacion_solido_total}"></td>
-                        <td th:text="${pago.pago_total}"></td>
-                        <td th:text="${pago.monto_retencion}"></td>
-                        <td th:text="${pago.monto_final}"></td>
+                        <td th:text="${pago.getQuincena}"></td>
+                        <td th:text="${pago.getProveedor.getCodigo}"></td>
+                        <td th:text="${pago.getProveedor.getNombre}"></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getTotalKlsLeche}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getTotalDias}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getPromedioKlsPorDia}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getVariacionLeche}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getGrasaSolidoTotal.getPorcentajeGrasa}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getVariacionGrasa}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getGrasaSolidoTotal.getPorcentajeSolidoTotal}"
+                        ></td>
+                        <td
+                            th:text="${pago.getDatosCentroAcopio.getVariacionSolidoTotal}"
+                        ></td>
+                        <td th:text="${pago.getPagoLeche}"></td>
+                        <td th:text="${pago.getPagoGrasa}"></td>
+                        <td th:text="${pago.getPagoSolidoTotal}"></td>
+                        <td th:text="${pago.getBonificacionFrecuencia}"></td>
+                        <td th:text="${pago.getDctoVariacionLeche}"></td>
+                        <td th:text="${pago.getDctoVariacionGrasa}"></td>
+                        <td th:text="${pago.getDctoVariacionSolidoTotal}"></td>
+                        <td th:text="${pago.getPagoTotal}"></td>
+                        <td th:text="${pago.getMontoRetencion}"></td>
+                        <td th:text="${pago.getMontoFinal}"></td>
                     </tr>
                 </tbody>
             </table>

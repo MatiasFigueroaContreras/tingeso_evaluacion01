@@ -1,7 +1,6 @@
 package tingeso.evaluacion01;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,20 +18,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class QuincenaServiceTests {
+class QuincenaServiceTests {
     @Mock
-    private QuincenaRepository quincena_repository_mock;
+    private QuincenaRepository quincenaRepositoryMock;
     @InjectMocks
-    private QuincenaService quincena_service;
+    private QuincenaService quincenaService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     //Test para verificar cuando se ingresa una quincena valida
-    void testIngresarQuincenaExitosa() throws Exception {
+    void testIngresarQuincenaExitosa() {
         QuincenaEntity quincena = new QuincenaEntity();
         quincena.setYear(2023);
         quincena.setMes(3);
@@ -40,9 +39,9 @@ public class QuincenaServiceTests {
         String id = quincena.toString();
         quincena.setId(id);
 
-        when(quincena_repository_mock.save(any(QuincenaEntity.class))).thenReturn(quincena);
+        when(quincenaRepositoryMock.save(any(QuincenaEntity.class))).thenReturn(quincena);
 
-        QuincenaEntity resultado = quincena_service.ingresarQuincena(quincena.getYear(), quincena.getMes(), quincena.getNumero());
+        QuincenaEntity resultado = quincenaService.ingresarQuincena(quincena.getYear(), quincena.getMes(), quincena.getNumero());
         assertEquals(quincena, resultado);
     }
 
@@ -53,7 +52,7 @@ public class QuincenaServiceTests {
         Integer mes = 8;
         Integer numero = 1;
 
-        Exception exception = assertThrows(Exception.class, () -> quincena_service.ingresarQuincena(year, mes, numero));
+        Exception exception = assertThrows(Exception.class, () -> quincenaService.ingresarQuincena(year, mes, numero));
         assertEquals("El año ingresado no es valido", exception.getMessage());
     }
 
@@ -64,7 +63,7 @@ public class QuincenaServiceTests {
         Integer mes = 13;
         Integer numero = 1;
 
-        Exception exception = assertThrows(Exception.class, () -> quincena_service.ingresarQuincena(year, mes, numero));
+        Exception exception = assertThrows(Exception.class, () -> quincenaService.ingresarQuincena(year, mes, numero));
         assertEquals("El mes de la quincena no es valido", exception.getMessage());
     }
 
@@ -75,19 +74,19 @@ public class QuincenaServiceTests {
         Integer mes = 12;
         Integer numero = 5;
 
-        Exception exception = assertThrows(Exception.class, () -> quincena_service.ingresarQuincena(year, mes, numero));
+        Exception exception = assertThrows(Exception.class, () -> quincenaService.ingresarQuincena(year, mes, numero));
         assertEquals("El numero de quincena no es valido", exception.getMessage());
     }
 
     @Test
     //Test para verificar que se lance una excepcion cuando la fecha es superior a la fecha actual
     void testIngresarQuincenaFechaSuperior() {
-        LocalDateTime fecha_actual = LocalDateTime.now();
-        Integer year = fecha_actual.getYear() + 1;
+        LocalDateTime fechaActual = LocalDateTime.now();
+        Integer year = fechaActual.getYear() + 1;
         Integer mes = 11;
         Integer numero = 2;
 
-        Exception exception = assertThrows(Exception.class, () -> quincena_service.ingresarQuincena(year, mes, numero));
+        Exception exception = assertThrows(Exception.class, () -> quincenaService.ingresarQuincena(year, mes, numero));
         assertEquals("La quincena ingresada es superior a la fecha actual", exception.getMessage());
     }
 
@@ -101,9 +100,9 @@ public class QuincenaServiceTests {
         String id = quincena.toString();
         quincena.setId(id);
 
-        when(quincena_repository_mock.findById(any(String.class))).thenReturn(Optional.of(quincena));
+        when(quincenaRepositoryMock.findById(any(String.class))).thenReturn(Optional.of(quincena));
 
-        boolean resultado = quincena_service.estaRegistradaQuincena(quincena.getYear(), quincena.getMes(), quincena.getNumero());
+        boolean resultado = quincenaService.estaRegistradaQuincena(quincena.getYear(), quincena.getMes(), quincena.getNumero());
         assertTrue(resultado);
     }
 
@@ -117,9 +116,9 @@ public class QuincenaServiceTests {
         String id = quincena.toString();
         quincena.setId(id);
 
-        when(quincena_repository_mock.findById(any(String.class))).thenReturn(Optional.empty());
+        when(quincenaRepositoryMock.findById(any(String.class))).thenReturn(Optional.empty());
 
-        boolean resultado = quincena_service.estaRegistradaQuincena(2023, 1, 1);
+        boolean resultado = quincenaService.estaRegistradaQuincena(2023, 1, 1);
         assertFalse(resultado);
     }
 }

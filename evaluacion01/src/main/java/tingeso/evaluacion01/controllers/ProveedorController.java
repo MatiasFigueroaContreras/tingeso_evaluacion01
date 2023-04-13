@@ -11,27 +11,27 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.services.ProveedorService;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping
 public class ProveedorController {
     @Autowired
-    ProveedorService proveedor_service;
+    ProveedorService proveedorService;
 
     @PostMapping("/proveedores/registrar")
     public String registrarProveedor(@RequestParam("codigo") String codigo,
                                      @RequestParam("nombre") String nombre,
                                      @RequestParam("categoria") String categoria,
                                      @RequestParam("retencion") String retencion,
-                                     RedirectAttributes redirect_attr){
+                                     RedirectAttributes redirectAttr){
         try {
-            proveedor_service.registrarProveedor(codigo, nombre, categoria, retencion);
-            redirect_attr.addFlashAttribute("message", "Proveedor registrado correctamente!")
+            proveedorService.registrarProveedor(codigo, nombre, categoria, retencion);
+            redirectAttr.addFlashAttribute("message", "Proveedor registrado correctamente!")
                     .addFlashAttribute("class", "success-alert");
         }
         catch (Exception e){
-            redirect_attr.addFlashAttribute("message", e.getMessage())
+            redirectAttr.addFlashAttribute("message", e.getMessage())
                     .addFlashAttribute("class", "error-alert");
         }
 
@@ -40,7 +40,7 @@ public class ProveedorController {
 
     @GetMapping("/proveedores/listar")
     public String listarProveedores(Model model){
-        ArrayList<ProveedorEntity> proveedores = proveedor_service.obtenerProveedores();
+        List<ProveedorEntity> proveedores = proveedorService.obtenerProveedores();
         model.addAttribute("proveedores", proveedores);
         if(proveedores.isEmpty()){
             model.addAttribute("message", "Aun no se han registrado proveedores");

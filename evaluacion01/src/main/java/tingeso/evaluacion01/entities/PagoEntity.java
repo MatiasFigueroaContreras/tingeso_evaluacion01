@@ -13,28 +13,28 @@ import lombok.NoArgsConstructor;
 public class PagoEntity {
     @Id
     private String id;
-    private Integer pago_leche;
-    private Integer pago_grasa;
-    private Integer pago_solido_total;
-    private Integer bonificacion_frecuencia;
-    private Integer dcto_variacion_leche;
-    private Integer dcto_variacion_grasa;
-    private Integer dcto_variacion_solido_total;
-    private Integer pago_total;
-    private Integer monto_retencion;
-    private Integer monto_final;
+    private Integer pagoLeche;
+    private Integer pagoGrasa;
+    private Integer pagoSolidoTotal;
+    private Integer bonificacionFrecuencia;
+    private Integer dctoVariacionLeche;
+    private Integer dctoVariacionGrasa;
+    private Integer dctoVariacionSolidoTotal;
+    private Integer pagoTotal;
+    private Integer montoRetencion;
+    private Integer montoFinal;
     @ManyToOne
     private ProveedorEntity proveedor;
     @ManyToOne
     private QuincenaEntity quincena;
     @ManyToOne
-    private DatosCentroAcopioEntity datos_centro_acopio;
+    private DatosCentroAcopioEntity datosCentroAcopio;
 
     public Integer getPagoAcopioLeche(){
-        return pago_leche + pago_grasa + pago_solido_total + bonificacion_frecuencia;
+        return pagoLeche + pagoGrasa + pagoSolidoTotal + bonificacionFrecuencia;
     }
 
     public Integer getDescuentos(){
-        return dcto_variacion_grasa + dcto_variacion_leche + dcto_variacion_solido_total;
+        return dctoVariacionGrasa + dctoVariacionLeche + dctoVariacionSolidoTotal;
     }
 }

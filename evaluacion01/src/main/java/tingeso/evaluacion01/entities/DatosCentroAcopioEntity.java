@@ -13,17 +13,31 @@ import lombok.NoArgsConstructor;
 public class DatosCentroAcopioEntity {
     @Id
     private String id;
-    private Integer dias_envio_m_t;
-    private Integer dias_envio_m;
-    private Integer dias_envio_t;
-    private Integer total_kls_leche;
-    private Integer variacion_leche;
-    private Integer variacion_grasa;
-    private Integer variacion_solido_total;
+    @Column(name = "dias_envio_m_t")
+    private Integer diasEnvioMyT;
+    @Column(name = "dias_envio_m")
+    private Integer diasEnvioM;
+    @Column(name = "dias_envio_t")
+    private Integer diasEnvioT;
+    private Integer totalKlsLeche;
+    private Integer variacionLeche;
+    private Integer variacionGrasa;
+    private Integer variacionSolidoTotal;
     @OneToOne
-    private GrasaSolidoTotalEntity grasa_solido_total;
+    private GrasaSolidoTotalEntity grasaSolidoTotal;
     @ManyToOne
     private ProveedorEntity proveedor;
     @ManyToOne
     private QuincenaEntity quincena;
+
+    public Integer getTotalDias(){
+        return diasEnvioMyT + diasEnvioM + diasEnvioT;
+    }
+
+    public Integer getPromedioKlsPorDia(){
+        if(getTotalDias() == 0){
+            return 0;
+        }
+        return totalKlsLeche / getTotalDias();
+    }
 }

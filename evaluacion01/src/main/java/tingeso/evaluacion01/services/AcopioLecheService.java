@@ -1,5 +1,6 @@
 package tingeso.evaluacion01.services;
 
+import lombok.Generated;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -12,126 +13,142 @@ import tingeso.evaluacion01.entities.ProveedorEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.repositories.AcopioLecheRepository;
 
-import lombok.Generated;
-
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class AcopioLecheService {
     @Autowired
-    AcopioLecheRepository acopio_leche_repository;
+    AcopioLecheRepository acopioLecheRepository;
     @Autowired
-    ProveedorService proveedor_service;
+    ProveedorService proveedorService;
 
-    public void guardarAcopioLeche(AcopioLecheEntity acopio_leche){
-        String codigo_proveedor = acopio_leche.getProveedor().getCodigo();
-        DateFormat date_format = new SimpleDateFormat("yyyy/MM/dd");
-        String fecha = date_format.format(acopio_leche.getFecha());
-        String turno = acopio_leche.getTurno();
-        String id = codigo_proveedor + "-" + fecha + "-" + turno;
-        acopio_leche.setId(id);
-        acopio_leche_repository.save(acopio_leche);
+    public void guardarAcopioLeche(AcopioLecheEntity acopioLeche) {
+        String codigoProveedor = acopioLeche.getProveedor().getCodigo();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String fecha = dateFormat.format(acopioLeche.getFecha());
+        String turno = acopioLeche.getTurno();
+        String id = codigoProveedor + "-" + fecha + "-" + turno;
+        acopioLeche.setId(id);
+        acopioLecheRepository.save(acopioLeche);
     }
 
-    public void guardarAcopiosLeches(ArrayList<AcopioLecheEntity> acopios_leche) {
-        for (AcopioLecheEntity acopio_leche : acopios_leche) {
-            guardarAcopioLeche(acopio_leche);
+    public void guardarAcopiosLeches(List<AcopioLecheEntity> acopiosLeche) {
+        for (AcopioLecheEntity acopioLeche : acopiosLeche) {
+            guardarAcopioLeche(acopioLeche);
         }
     }
 
-    public ArrayList<AcopioLecheEntity> obtenerAcopiosLechePorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena){
-        return (ArrayList<AcopioLecheEntity>) acopio_leche_repository.findAllByProveedorAndQuincena(proveedor, quincena);
+    public List<AcopioLecheEntity> obtenerAcopiosLechePorProveedorQuincena(ProveedorEntity proveedor, QuincenaEntity quincena) {
+        return acopioLecheRepository.findAllByProveedorAndQuincena(proveedor, quincena);
     }
 
-    public boolean existenAcopiosLechePorQuincena(QuincenaEntity quincena){
-        return acopio_leche_repository.existsByQuincena(quincena);
+    public boolean existenAcopiosLechePorQuincena(QuincenaEntity quincena) {
+        return acopioLecheRepository.existsByQuincena(quincena);
     }
 
-    public void validarListaAcopioLecheQuincena(ArrayList<AcopioLecheEntity> acopios_leche, QuincenaEntity quincena) throws Exception{
-        for (AcopioLecheEntity acopio_leche : acopios_leche) {
-            acopio_leche.setQuincena(quincena);
-            validarAcopioLeche(acopio_leche);
+    public void validarListaAcopioLecheQuincena(List<AcopioLecheEntity> acopiosLeche, QuincenaEntity quincena) {
+        for (AcopioLecheEntity acopioLeche : acopiosLeche) {
+            acopioLeche.setQuincena(quincena);
+            validarAcopioLeche(acopioLeche);
         }
     }
 
-    public void validarAcopioLeche(AcopioLecheEntity acopio_leche) throws Exception{
-        String turno = acopio_leche.getTurno();
-        Integer kls_leche = acopio_leche.getCantidad_leche();
-        Date fecha = acopio_leche.getFecha();
-        ProveedorEntity proveedor = acopio_leche.getProveedor();
-        QuincenaEntity quincena = acopio_leche.getQuincena();
-        if(!turno.equals("M") && !turno.equals("T")){
-            throw new Exception("Algun turno no es valido, debe ser M o T");
+    public void validarAcopioLeche(AcopioLecheEntity acopioLeche) {
+        String turno = acopioLeche.getTurno();
+        Integer klsLeche = acopioLeche.getCantidadLeche();
+        Date fecha = acopioLeche.getFecha();
+        ProveedorEntity proveedor = acopioLeche.getProveedor();
+        QuincenaEntity quincena = acopioLeche.getQuincena();
+        if (!turno.equals("M") && !turno.equals("T")) {
+            throw new IllegalArgumentException("Algun turno no es valido, debe ser M o T");
         }
 
-        if(kls_leche < 0){
-            throw new Exception("Los kilos de leche tienen que ser positivos");
+        if (klsLeche < 0) {
+            throw new IllegalArgumentException("Los kilos de leche tienen que ser positivos");
         }
 
-        if(!quincena.estaDentroQuincena(fecha)){
-            throw new Exception("Las fechas ingresadas tienen que coincidir con la quincena");
+        if (!quincena.estaDentroQuincena(fecha)) {
+            throw new IllegalArgumentException("Las fechas ingresadas tienen que coincidir con la quincena");
         }
 
-        if(!proveedor_service.existeProveedor(proveedor)) {
-            throw new Exception("Los proveedores tienen que estar registrados");
+        if (!proveedorService.existeProveedor(proveedor)) {
+            throw new IllegalArgumentException("Los proveedores tienen que estar registrados");
         }
     }
 
     @Generated
-    public ArrayList<AcopioLecheEntity> leerExcel(MultipartFile file) throws Exception {
-        ArrayList<AcopioLecheEntity> acopios_leche = new ArrayList<>();
-        String filename = file.getOriginalFilename();
-        if(!filename.endsWith(".xlsx")){
-            throw new Exception("El archivo ingresado no es un .xlsx");
+    public List<AcopioLecheEntity> leerExcel(MultipartFile file) {
+        List<AcopioLecheEntity> acopiosLeche = new ArrayList<>();
+        String fileName = file.getOriginalFilename();
+        if (fileName == null || !fileName.endsWith(".xlsx")) {
+            throw new IllegalArgumentException("El archivo ingresado no es un .xlsx");
         }
-        XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-        XSSFSheet worksheet = workbook.getSheetAt(0);
-        boolean row_verification = true;
-        for(Row row: worksheet){
-            if (row_verification)
-            {
-                row_verification = false;
+
+        XSSFWorkbook workBook;
+        try {
+            workBook = new XSSFWorkbook(file.getInputStream());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("El archivo ingresado no pudo ser leido");
+        }
+
+        XSSFSheet workSheet = workBook.getSheetAt(0);
+        boolean rowVerification = true;
+
+        for (Row row : workSheet) {
+            if (rowVerification) {
+                rowVerification = false;
                 continue;
             }
 
-            Iterator<Cell> cell_itr = row.iterator();
-            int i_cell = 0;
-            AcopioLecheEntity acopio_leche = new AcopioLecheEntity();
+            Iterator<Cell> cellIterator = row.iterator();
+            int iCell = 0;
+            AcopioLecheEntity acopioLeche = new AcopioLecheEntity();
             ProveedorEntity proveedor = new ProveedorEntity();
-            while (cell_itr.hasNext()){
-                Cell cell = cell_itr.next();
-                try {
-                    switch (i_cell) {
-                        case 0 -> acopio_leche.setFecha(cell.getDateCellValue());
-                        case 1 -> acopio_leche.setTurno(cell.getStringCellValue());
-                        case 2 -> {
-                            try {
-                                proveedor.setCodigo(cell.getStringCellValue());
-                            } catch (IllegalStateException e) {
-                                int codigo = (int) cell.getNumericCellValue();
-                                proveedor.setCodigo(Integer.toString(codigo));
-                            }
-                            break;
-                        }
-                        case 3 -> acopio_leche.setCantidad_leche((int) cell.getNumericCellValue());
-                        default -> {
-                        }
-                    }
-                }catch (Exception e){
-                    throw new Exception("El Excel ingresado contiene datos no validos.");
-                }
-                i_cell++;
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                setValoresPorCelda(acopioLeche, proveedor, cell, iCell);
+                iCell++;
             }
-            if(i_cell == 4) {
-                acopio_leche.setProveedor(proveedor);
-                acopios_leche.add(acopio_leche);
+            if (iCell == 4) {
+                acopioLeche.setProveedor(proveedor);
+                acopiosLeche.add(acopioLeche);
             }
         }
 
-        return acopios_leche;
+        return acopiosLeche;
+    }
+
+    @Generated
+    private void setValoresPorCelda(AcopioLecheEntity acopioLeche, ProveedorEntity proveedor, Cell cell, int iCell) {
+        try {
+            switch (iCell) {
+                case 0 -> acopioLeche.setFecha(cell.getDateCellValue());
+                case 1 -> acopioLeche.setTurno(cell.getStringCellValue());
+                case 2 -> proveedor.setCodigo(getCodigoPorCelda(cell));
+                case 3 -> acopioLeche.setCantidadLeche((int) cell.getNumericCellValue());
+                default -> {
+                    //No pasa por aqui
+                }
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El Excel ingresado contiene datos no validos");
+        }
+    }
+
+    @Generated
+    private String getCodigoPorCelda(Cell cell){
+        try {
+            return cell.getStringCellValue();
+        }
+        catch (IllegalStateException e) {
+            int codigo = (int) cell.getNumericCellValue();
+            return Integer.toString(codigo);
+        }
     }
 }

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,7 +17,7 @@ public class AcopioLecheEntity {
     @Id
     private String id;
     private String turno;
-    private Integer cantidad_leche;
+    private Integer cantidadLeche;
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date fecha;
     @ManyToOne

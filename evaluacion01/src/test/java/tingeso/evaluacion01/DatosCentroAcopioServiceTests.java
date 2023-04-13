@@ -16,111 +16,114 @@ import tingeso.evaluacion01.services.ProveedorService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class DatosCentroAcopioServiceTests {
+class DatosCentroAcopioServiceTests {
     @Mock
-    DatosCentroAcopioRepository datos_centro_acopio_repository_mock;
+    DatosCentroAcopioRepository datosCentroAcopioRepositoryMock;
     @Mock
-    AcopioLecheService acopio_leche_service_mock;
+    AcopioLecheService acopioLecheServiceMock;
     @Mock
-    GrasaSolidoTotalService grasa_solido_total_service_mock;
+    GrasaSolidoTotalService grasaSolidoTotalServiceMock;
     @Mock
-    ProveedorService proveedor_service_mock;
+    ProveedorService proveedorServiceMock;
     @InjectMocks
-    DatosCentroAcopioService datos_centro_acopio_service;
+    DatosCentroAcopioService datosCentroAcopioService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testGuardarListaDatosCA(){
-        ProveedorEntity proveedor_1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
+    void testGuardarListaDatosCA(){
+        ProveedorEntity proveedor1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
-        GrasaSolidoTotalEntity grasa_solido_total_1 = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor_1, quincena);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setDias_envio_m_t(10);
-        datos_ca.setDias_envio_m(1);
-        datos_ca.setDias_envio_t(1);
-        datos_ca.setTotal_kls_leche(1254);
-        datos_ca.setVariacion_leche(10);
-        datos_ca.setVariacion_grasa(4);
-        datos_ca.setVariacion_solido_total(-30);
-        datos_ca.setGrasa_solido_total(grasa_solido_total_1);
-        datos_ca.setProveedor(proveedor_1);
-        datos_ca.setQuincena(quincena);
+        GrasaSolidoTotalEntity grasaSolidoTotal1 = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor1, quincena);
+        DatosCentroAcopioEntity datosCentroAcopio1 = new DatosCentroAcopioEntity();
+        datosCentroAcopio1.setDiasEnvioMyT(10);
+        datosCentroAcopio1.setDiasEnvioM(1);
+        datosCentroAcopio1.setDiasEnvioT(1);
+        datosCentroAcopio1.setTotalKlsLeche(1254);
+        datosCentroAcopio1.setVariacionLeche(10);
+        datosCentroAcopio1.setVariacionGrasa(4);
+        datosCentroAcopio1.setVariacionSolidoTotal(-30);
+        datosCentroAcopio1.setGrasaSolidoTotal(grasaSolidoTotal1);
+        datosCentroAcopio1.setProveedor(proveedor1);
+        datosCentroAcopio1.setQuincena(quincena);
 
-        ProveedorEntity proveedor_2 = new ProveedorEntity("54321", "Proveedor 2", "A", "Si");
-        GrasaSolidoTotalEntity grasa_solido_total_2 = new GrasaSolidoTotalEntity("54321-2023/03/1", 25, 32, proveedor_2, quincena);
-        DatosCentroAcopioEntity datos_ca_2 = new DatosCentroAcopioEntity();
-        datos_ca_2.setDias_envio_m_t(10);
-        datos_ca_2.setDias_envio_m(1);
-        datos_ca_2.setDias_envio_t(1);
-        datos_ca_2.setTotal_kls_leche(1254);
-        datos_ca_2.setVariacion_leche(10);
-        datos_ca_2.setVariacion_grasa(4);
-        datos_ca_2.setVariacion_solido_total(-30);
-        datos_ca_2.setGrasa_solido_total(grasa_solido_total_2);
-        datos_ca_2.setProveedor(proveedor_2);
-        datos_ca_2.setQuincena(quincena);
+        ProveedorEntity proveedor2 = new ProveedorEntity("54321", "Proveedor 2", "A", "Si");
+        GrasaSolidoTotalEntity grasaSolidoTotal2 = new GrasaSolidoTotalEntity("54321-2023/03/1", 25, 32, proveedor2, quincena);
+        DatosCentroAcopioEntity datosCentroAcopio2 = new DatosCentroAcopioEntity();
+        datosCentroAcopio2.setDiasEnvioMyT(10);
+        datosCentroAcopio2.setDiasEnvioM(1);
+        datosCentroAcopio2.setDiasEnvioT(1);
+        datosCentroAcopio2.setTotalKlsLeche(1254);
+        datosCentroAcopio2.setVariacionLeche(10);
+        datosCentroAcopio2.setVariacionGrasa(4);
+        datosCentroAcopio2.setVariacionSolidoTotal(-30);
+        datosCentroAcopio2.setGrasaSolidoTotal(grasaSolidoTotal2);
+        datosCentroAcopio2.setProveedor(proveedor2);
+        datosCentroAcopio2.setQuincena(quincena);
 
-        ArrayList<DatosCentroAcopioEntity> lista_datos_ca = new ArrayList<>();
-        lista_datos_ca.add(datos_ca);
-        lista_datos_ca.add(datos_ca_2);
+        ArrayList<DatosCentroAcopioEntity> listaDatosCa = new ArrayList<>();
+        listaDatosCa.add(datosCentroAcopio1);
+        listaDatosCa.add(datosCentroAcopio2);
 
-        datos_centro_acopio_service.guardarListaDatosCA(lista_datos_ca);
+        datosCentroAcopioService.guardarListaDatosCA(listaDatosCa);
+        verify(datosCentroAcopioRepositoryMock, times(1)).save(datosCentroAcopio1);
+        verify(datosCentroAcopioRepositoryMock, times(1)).save(datosCentroAcopio2);
     }
 
     @Test
     //Test que prueba el caso exitoso de calcular datos del centro de acopio por quincena,
     // tomando las funciones completas de calcularDatosCAPorProveedorQuincena, calcularDatosAcopioLeche
     // y solo un caso de calcularVariacionesDatosCA y obtenerDatosCAPorProveedorQuincena
-    public void testCalcularDatosCAPorQuincena() throws Exception {
+    void testCalcularDatosCAPorQuincena() throws Exception {
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
-        SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM/dd");
-        AcopioLecheEntity acopio_leche_1 = new AcopioLecheEntity(
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        AcopioLecheEntity acopioLeche1 = new AcopioLecheEntity(
                 proveedor.getCodigo() +  "-2023/03/01-" + "M",
                 "M",
                 100,
-                date_format.parse("2023/03/01"),
+                dateFormat.parse("2023/03/01"),
                 proveedor,
                 quincena);
-        AcopioLecheEntity acopio_leche_2 = new AcopioLecheEntity(
+        AcopioLecheEntity acopioLeche2 = new AcopioLecheEntity(
                 proveedor.getCodigo() +  "-2023/03/01-" + "T",
                 "T",
                 250,
-                date_format.parse("2023/03/01"),
+                dateFormat.parse("2023/03/01"),
                 proveedor,
                 quincena);
-        AcopioLecheEntity acopio_leche_3 = new AcopioLecheEntity(
+        AcopioLecheEntity acopioLeche3 = new AcopioLecheEntity(
                 proveedor.getCodigo() +  "-2023/03/02-" + "M",
                 "M",
                 75,
-                date_format.parse("2023/03/02"),
+                dateFormat.parse("2023/03/02"),
                 proveedor,
                 quincena);
-        AcopioLecheEntity acopio_leche_4 = new AcopioLecheEntity(
+        AcopioLecheEntity acopioLeche4 = new AcopioLecheEntity(
                 proveedor.getCodigo() +  "-2023/03/03-" + "T",
                 "T",
                 300,
-                date_format.parse("2023/03/03"),
+                dateFormat.parse("2023/03/03"),
                 proveedor,
                 quincena);
-        ArrayList<AcopioLecheEntity> acopios_leche = new ArrayList<>();
-        acopios_leche.add(acopio_leche_1);
-        acopios_leche.add(acopio_leche_2);
-        acopios_leche.add(acopio_leche_3);
-        acopios_leche.add(acopio_leche_4);
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
-        DatosCentroAcopioEntity datos_ca_anterior = new DatosCentroAcopioEntity(
+        ArrayList<AcopioLecheEntity> acopiosLeche = new ArrayList<>();
+        acopiosLeche.add(acopioLeche1);
+        acopiosLeche.add(acopioLeche2);
+        acopiosLeche.add(acopioLeche3);
+        acopiosLeche.add(acopioLeche4);
+        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
+        DatosCentroAcopioEntity datosCaAnterior = new DatosCentroAcopioEntity(
                 proveedor.getCodigo() + "-2023/02/2",
                 5,
                 2,
@@ -129,27 +132,56 @@ public class DatosCentroAcopioServiceTests {
                 0,
                 0,
                 0,
-                grasa_solido_total,
+                grasaSolidoTotal,
                 proveedor,
                 quincena.obtenerQuincenaAnterior()
         );
 
-        when(proveedor_service_mock.obtenerProveedores()).thenReturn(new ArrayList<>(Arrays.asList(proveedor)));
-        when(acopio_leche_service_mock.obtenerAcopiosLechePorProveedorQuincena(proveedor, quincena)).thenReturn(acopios_leche);
-        when(grasa_solido_total_service_mock.obtenerGrasaSolidoTotalPorProveedorQuincena(proveedor, quincena)).thenReturn(grasa_solido_total);
-        when(datos_centro_acopio_repository_mock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.of(datos_ca_anterior));
+        when(proveedorServiceMock.obtenerProveedores()).thenReturn(new ArrayList<>(Arrays.asList(proveedor)));
+        when(acopioLecheServiceMock.obtenerAcopiosLechePorProveedorQuincena(proveedor, quincena)).thenReturn(acopiosLeche);
+        when(grasaSolidoTotalServiceMock.obtenerGrasaSolidoTotalPorProveedorQuincena(proveedor, quincena)).thenReturn(grasaSolidoTotal);
+        when(datosCentroAcopioRepositoryMock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.of(datosCaAnterior));
 
-        datos_centro_acopio_service.calcularDatosCAPorQuincena(quincena);
+        List<DatosCentroAcopioEntity> listaDatosCa =  datosCentroAcopioService.calcularDatosCAPorQuincena(quincena);
+        assertTrue(!listaDatosCa.isEmpty());
+    }
+
+    @Test
+    void testCalcularDatosCAPorProveedorQuincenaKlsLeche0() {
+        QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
+        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
+
+        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity("12345-2023/03/1", 0, 0, proveedor, quincena);
+        DatosCentroAcopioEntity datosCaAnterior = new DatosCentroAcopioEntity(
+                proveedor.getCodigo() + "-2023/02/2",
+                5,
+                2,
+                3,
+                700,
+                0,
+                0,
+                0,
+                grasaSolidoTotal,
+                proveedor,
+                quincena.obtenerQuincenaAnterior()
+        );
+
+        when(acopioLecheServiceMock.obtenerAcopiosLechePorProveedorQuincena(proveedor, quincena)).thenReturn(new ArrayList<>());
+        when(grasaSolidoTotalServiceMock.obtenerGrasaSolidoTotalPorProveedorQuincena(proveedor, quincena)).thenReturn(grasaSolidoTotal);
+        when(datosCentroAcopioRepositoryMock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.of(datosCaAnterior));
+
+        DatosCentroAcopioEntity datosCentroAcopio = datosCentroAcopioService.calcularDatosCAPorProveedorQuincena(proveedor, quincena);
+        assertEquals(0, datosCentroAcopio.getTotalKlsLeche());
     }
 
     @Test
     //Test para verificar que se lance la excepcion de que existen datos para la quincena
     // anterior los cuales no fueron calculados.
-    public void testCalcularVariacionesDatosCADatosQuincenaAnteriorNoCalculados(){
+    void testCalcularVariacionesDatosCADatosQuincenaAnteriorNoCalculados(){
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity(
+        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity(
                 proveedor.getCodigo() + "-2023/02/2",
                 5,
                 2,
@@ -158,27 +190,27 @@ public class DatosCentroAcopioServiceTests {
                 0,
                 0,
                 0,
-                grasa_solido_total,
+                grasaSolidoTotal,
                 proveedor,
                 quincena
         );
 
-        when(datos_centro_acopio_repository_mock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.empty());
-        when(acopio_leche_service_mock.existenAcopiosLechePorQuincena(quincena.obtenerQuincenaAnterior())).thenReturn(true);
+        when(datosCentroAcopioRepositoryMock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.empty());
+        when(acopioLecheServiceMock.existenAcopiosLechePorQuincena(quincena.obtenerQuincenaAnterior())).thenReturn(true);
 
         Exception exception = assertThrows(Exception.class, () -> {
-            datos_centro_acopio_service.calcularVariacionesDatosCA(datos_ca);
+            datosCentroAcopioService.calcularVariacionesDatosCA(datosCentroAcopio);
         });
         assertEquals("Existen pagos del centro de acopio no calculados para la quincena anterior", exception.getMessage());
     }
 
     @Test
     //Test para para verificar el caso en que no existen datos para la quincena anterior
-    public void testCalcularVariacionesDatosCANoExistenDatosQuincenaAnterior() throws Exception{
+    void testCalcularVariacionesDatosCANoExistenDatosQuincenaAnterior() {
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity(
+        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity(
                 proveedor.getCodigo() + "-2023/02/2",
                 5,
                 2,
@@ -187,25 +219,40 @@ public class DatosCentroAcopioServiceTests {
                 0,
                 0,
                 0,
-                grasa_solido_total,
+                grasaSolidoTotal,
                 proveedor,
                 quincena
         );
 
-        when(datos_centro_acopio_repository_mock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.empty());
-        when(acopio_leche_service_mock.existenAcopiosLechePorQuincena(quincena.obtenerQuincenaAnterior())).thenReturn(false);
-        datos_centro_acopio_service.calcularVariacionesDatosCA(datos_ca);
+        when(datosCentroAcopioRepositoryMock.findByProveedorAndQuincena(proveedor, quincena.obtenerQuincenaAnterior())).thenReturn(Optional.empty());
+        when(acopioLecheServiceMock.existenAcopiosLechePorQuincena(quincena.obtenerQuincenaAnterior())).thenReturn(false);
+        datosCentroAcopioService.calcularVariacionesDatosCA(datosCentroAcopio);
+        assertEquals(0, datosCentroAcopio.getVariacionLeche());
+        assertEquals(0, datosCentroAcopio.getVariacionGrasa());
+        assertEquals(0, datosCentroAcopio.getVariacionSolidoTotal());
     }
 
     @Test
     //Test para la funcion de existencia de datos para el calculo de los datos
-    // del centro de acopio para una quincena dada
-    public void testExistenDatosCAParaCalculoPorQuincena(){
+    // del centro de acopio para una quincena dada caso True
+    void testExistenDatosCAParaCalculoPorQuincenaTrue(){
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
 
-        when(acopio_leche_service_mock.existenAcopiosLechePorQuincena(quincena)).thenReturn(true);
-        when(grasa_solido_total_service_mock.existeGrasaSolidoTotalPorQuincena(quincena)).thenReturn(true);
+        when(acopioLecheServiceMock.existenAcopiosLechePorQuincena(quincena)).thenReturn(true);
+        when(grasaSolidoTotalServiceMock.existeGrasaSolidoTotalPorQuincena(quincena)).thenReturn(true);
 
-        datos_centro_acopio_service.existenDatosCAParaCalculoPorQuincena(quincena);
+        assertTrue(datosCentroAcopioService.existenDatosCAParaCalculoPorQuincena(quincena));
+    }
+
+    @Test
+    //Test para la funcion de existencia de datos para el calculo de los datos
+    // del centro de acopio para una quincena dada caso False
+    void testExistenDatosCAParaCalculoPorQuincenaFalse(){
+        QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
+
+        when(acopioLecheServiceMock.existenAcopiosLechePorQuincena(quincena)).thenReturn(true);
+        when(grasaSolidoTotalServiceMock.existeGrasaSolidoTotalPorQuincena(quincena)).thenReturn(false);
+
+        assertFalse(datosCentroAcopioService.existenDatosCAParaCalculoPorQuincena(quincena));
     }
 }

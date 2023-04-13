@@ -2,6 +2,8 @@ package tingeso.evaluacion01;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -11,86 +13,89 @@ import tingeso.evaluacion01.repositories.PagoRepository;
 import tingeso.evaluacion01.services.PagoService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class PagoServiceTests {
+class PagoServiceTests {
     @Mock
-    PagoRepository pago_repository_mock;
+    PagoRepository pagoRepositoryMock;
     @InjectMocks
-    PagoService pago_service;
+    PagoService pagoService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testObtenerPagos(){
+    void testObtenerPagos(){
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 3, 1);
-        PagoEntity pago_1 = new PagoEntity("12345-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor, quincena, new DatosCentroAcopioEntity());
-        PagoEntity pago_2 = new PagoEntity("12345-2023/02/2", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor, quincena.obtenerQuincenaAnterior(), new DatosCentroAcopioEntity());
+        PagoEntity pago1 = new PagoEntity("12345-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor, quincena, new DatosCentroAcopioEntity());
+        PagoEntity pago2 = new PagoEntity("12345-2023/02/2", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor, quincena.obtenerQuincenaAnterior(), new DatosCentroAcopioEntity());
         ArrayList<PagoEntity> pagos = new ArrayList<>();
-        pagos.add(pago_1);
-        pagos.add(pago_2);
-        when(pago_repository_mock.findAllByOrderByQuincenaDescProveedorCodigoAsc()).thenReturn(pagos);
+        pagos.add(pago1);
+        pagos.add(pago2);
+        when(pagoRepositoryMock.findAllByOrderByQuincenaDescProveedorCodigoAsc()).thenReturn(pagos);
 
-        ArrayList<PagoEntity> respuesta = pago_service.obtenerPagos();
+        List<PagoEntity> respuesta = pagoService.obtenerPagos();
         assertEquals(respuesta, pagos);
     }
 
     @Test
-    public void testObtenerPagosPorQuincena(){
-        ProveedorEntity proveedor_1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
-        ProveedorEntity proveedor_2 = new ProveedorEntity("54321", "Proveedor 2", "C", "Si");
+    void testObtenerPagosPorQuincena(){
+        ProveedorEntity proveedor1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
+        ProveedorEntity proveedor2 = new ProveedorEntity("54321", "Proveedor 2", "C", "Si");
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 3, 1);
-        PagoEntity pago_1 = new PagoEntity("12345-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor_1, quincena, new DatosCentroAcopioEntity());
-        PagoEntity pago_2 = new PagoEntity("54321-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor_2, quincena, new DatosCentroAcopioEntity());
+        PagoEntity pago1 = new PagoEntity("12345-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor1, quincena, new DatosCentroAcopioEntity());
+        PagoEntity pago2 = new PagoEntity("54321-2023/03/1", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor2, quincena, new DatosCentroAcopioEntity());
         ArrayList<PagoEntity> pagos = new ArrayList<>();
-        pagos.add(pago_1);
-        pagos.add(pago_2);
+        pagos.add(pago1);
+        pagos.add(pago2);
 
-        when(pago_repository_mock.findAllByQuincena(quincena)).thenReturn(pagos);
+        when(pagoRepositoryMock.findAllByQuincena(quincena)).thenReturn(pagos);
 
-        ArrayList<PagoEntity> respuesta = pago_service.obtenerPagosPorQuincena(quincena);
+        List<PagoEntity> respuesta = pagoService.obtenerPagosPorQuincena(quincena);
         assertEquals(respuesta, pagos);
     }
 
     @Test
-    public void testExistenagosPorQuincena(){
+    void testExistenagosPorQuincena(){
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 3, 1);
 
-        when(pago_repository_mock.existsByQuincena(quincena)).thenReturn(true);
+        when(pagoRepositoryMock.existsByQuincena(quincena)).thenReturn(true);
 
-        boolean respuesta = pago_service.existenPagosPorQuincena(quincena);
+        boolean respuesta = pagoService.existenPagosPorQuincena(quincena);
 
         assertTrue(respuesta);
     }
 
     @Test
-    public void testGuardarPagos(){
-        ProveedorEntity proveedor_1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
-        ProveedorEntity proveedor_2 = new ProveedorEntity("54321", "Proveedor 2", "C", "Si");
+    void testGuardarPagos(){
+        ProveedorEntity proveedor1 = new ProveedorEntity("12345", "Proveedor 1", "A", "Si");
+        ProveedorEntity proveedor2 = new ProveedorEntity("54321", "Proveedor 2", "C", "Si");
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 3, 1);
-        PagoEntity pago_1 = new PagoEntity("", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor_1, quincena, new DatosCentroAcopioEntity());
-        PagoEntity pago_2 = new PagoEntity("", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor_2, quincena, new DatosCentroAcopioEntity());
+        PagoEntity pago1 = new PagoEntity("", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor1, quincena, new DatosCentroAcopioEntity());
+        PagoEntity pago2 = new PagoEntity("", 500000, 12000, 3500, 20000, 150, 0, 0, 535350, 0, 535350, proveedor2, quincena, new DatosCentroAcopioEntity());
         ArrayList<PagoEntity> pagos = new ArrayList<>();
-        pagos.add(pago_1);
-        pagos.add(pago_2);
+        pagos.add(pago1);
+        pagos.add(pago2);
 
-        pago_service.guardarPagos(pagos);
+        pagoService.guardarPagos(pagos);
+        verify(pagoRepositoryMock, times(1)).save(pago1);
+        verify(pagoRepositoryMock, times(1)).save(pago2);
     }
 
     @Test
-    public void testCalcularPagos(){
+    void testCalcularPagos(){
         QuincenaEntity quincena = new QuincenaEntity("2023/03/1", 2023, 03, 1);
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity(
+        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity("12345-2023/03/1", 25, 32, proveedor, quincena);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity(
                 proveedor.getCodigo() + "-2023/02/2",
                 5,
                 2,
@@ -99,294 +104,151 @@ public class PagoServiceTests {
                 0,
                 0,
                 0,
-                grasa_solido_total,
+                grasaSolidoTotal,
                 proveedor,
                 quincena
         );
 
-        ArrayList<DatosCentroAcopioEntity> lista_datos_ca = new ArrayList<>();
-        lista_datos_ca.add(datos_ca);
+        ArrayList<DatosCentroAcopioEntity> listaDatosCa = new ArrayList<>();
+        listaDatosCa.add(datosCentroAcopio);
 
-        pago_service.calcularPagos(lista_datos_ca);
+        List<PagoEntity> respuesta = pagoService.calcularPagos(listaDatosCa);
+        assertTrue(!respuesta.isEmpty());
     }
 
-    @Test
-    public void testCalcularpago_lecheCategoriaA(){
-        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        Integer kls_total = 1000;
-        datos_ca.setTotal_kls_leche(kls_total);
-        datos_ca.setProveedor(proveedor);
 
-        Integer pago_leche = pago_service.calcularPagoLeche(datos_ca);
+    @ParameterizedTest
+    @CsvSource({"A, 700", "B, 550", "C, 400", "D, 250"})
+    void testCalcularPagoLecheCategorias(String categoria, int pago){
+        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", categoria, "Si");
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        Integer klsTotal = 1000;
+        datosCentroAcopio.setTotalKlsLeche(klsTotal);
+        datosCentroAcopio.setProveedor(proveedor);
 
-        assertEquals(700000, pago_leche);
+        Integer pago_leche = pagoService.calcularPagoLeche(datosCentroAcopio);
+
+        assertEquals(klsTotal * pago, pago_leche);
     }
 
-    @Test
-    public void testCalcularpago_lecheCategoriaB(){
-        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "B", "Si");
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        Integer kls_total = 1000;
-        datos_ca.setTotal_kls_leche(kls_total);
-        datos_ca.setProveedor(proveedor);
-
-        Integer pago_leche = pago_service.calcularPagoLeche(datos_ca);
-
-        assertEquals(550000, pago_leche);
-    }
-
-    @Test
-    public void testCalcularpago_lecheCategoriaC(){
-        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "C", "Si");
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        Integer kls_total = 1000;
-        datos_ca.setTotal_kls_leche(kls_total);
-        datos_ca.setProveedor(proveedor);
-
-        Integer pago_leche = pago_service.calcularPagoLeche(datos_ca);
-
-        assertEquals(400000, pago_leche);
-    }
-
-    @Test
-    public void testCalcularpago_lecheCategoriaD(){
-        ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "D", "Si");
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        Integer kls_total = 1000;
-        datos_ca.setTotal_kls_leche(kls_total);
-        datos_ca.setProveedor(proveedor);
-
-        Integer pago_leche = pago_service.calcularPagoLeche(datos_ca);
-
-        assertEquals(250000, pago_leche);
-    }
-
-    @Test
-    public void testCalcularPagoGrasaRango0a20() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity();
-        grasa_solido_total.setPorcentaje_grasa(10);
-        datos_ca.setGrasa_solido_total(grasa_solido_total);
-        datos_ca.setTotal_kls_leche(1000);
-
-        Integer pago_grasa = pago_service.calcularPagoGrasa(datos_ca);
-
-        assertEquals(30000, pago_grasa);
-    }
-
-    @Test
-    public void testCalcularPagoGrasaRango21a45() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity();
-        grasa_solido_total.setPorcentaje_grasa(30);
-        datos_ca.setGrasa_solido_total(grasa_solido_total);
-        datos_ca.setTotal_kls_leche(500);
-        Integer pago_grasa = pago_service.calcularPagoGrasa(datos_ca);
-
-        assertEquals(40000, pago_grasa);
-    }
-
-    @Test
-    public void testCalcularPagoGrasaRangoMayor45() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        GrasaSolidoTotalEntity grasa_solido_total = new GrasaSolidoTotalEntity();
-        grasa_solido_total.setPorcentaje_grasa(50);
-        datos_ca.setGrasa_solido_total(grasa_solido_total);
-        datos_ca.setTotal_kls_leche(1500);
-        Integer pago_grasa = pago_service.calcularPagoGrasa(datos_ca);
-
-        assertEquals(180000, pago_grasa);
-    }
-
-    @Test
-    public void testCalculoPagoSolidoTotalRango0a7() {
+    @ParameterizedTest
+    @CsvSource({"10, 1000, 30000", "30, 500, 40000", "50, 1500, 180000"})
+    void testCalcularPagoGrasa(int porcentajeGrasa, int totalKlsLeche, int resultadoEsperado){
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
         GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity();
-        grasaSolidoTotal.setPorcentaje_solido_total(5);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setGrasa_solido_total(grasaSolidoTotal);
-        datos_ca.setTotal_kls_leche(100);
-        Integer pago_solido_total = pago_service.calcularPagoSolidoTotal(datos_ca);
-        assertEquals(-13000, pago_solido_total);
+        grasaSolidoTotal.setPorcentajeGrasa(porcentajeGrasa);
+        datosCentroAcopio.setGrasaSolidoTotal(grasaSolidoTotal);
+        datosCentroAcopio.setTotalKlsLeche(totalKlsLeche);
+
+        Integer pagoGrasa = pagoService.calcularPagoGrasa(datosCentroAcopio);
+
+        assertEquals(resultadoEsperado, pagoGrasa);
     }
 
-    @Test
-    public void testCalculoPagoSolidoTotalRango8a18() {
+    @ParameterizedTest
+    @CsvSource({"5, -13000", "15, -9000", "25, 9500", "40, 15000"})
+    void testCalcularPagoSolidoTotal(int porcentajeSolidoTotal, int resultadoEsperado){
         GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity();
-        grasaSolidoTotal.setPorcentaje_solido_total(15);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setGrasa_solido_total(grasaSolidoTotal);
-        datos_ca.setTotal_kls_leche(100);
-        Integer pago_solido_total = pago_service.calcularPagoSolidoTotal(datos_ca);
-        assertEquals(-9000, pago_solido_total);
-    }
-
-    @Test
-    public void testCalculoPagoSolidoTotalRango19a35() {
-        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity();
-        grasaSolidoTotal.setPorcentaje_solido_total(25);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setGrasa_solido_total(grasaSolidoTotal);
-        datos_ca.setTotal_kls_leche(100);
-        Integer pago_solido_total = pago_service.calcularPagoSolidoTotal(datos_ca);
-        assertEquals(9500, pago_solido_total);
-    }
-
-    @Test
-    public void testCalculoPagoSolidoTotalMayor35() {
-        GrasaSolidoTotalEntity grasaSolidoTotal = new GrasaSolidoTotalEntity();
-        grasaSolidoTotal.setPorcentaje_solido_total(40);
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setGrasa_solido_total(grasaSolidoTotal);
-        datos_ca.setTotal_kls_leche(100);
-        Integer pago_solido_total = pago_service.calcularPagoSolidoTotal(datos_ca);
-        assertEquals(15000, pago_solido_total);
+        grasaSolidoTotal.setPorcentajeSolidoTotal(porcentajeSolidoTotal);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setGrasaSolidoTotal(grasaSolidoTotal);
+        datosCentroAcopio.setTotalKlsLeche(100);
+        Integer pagoSolidoTotal = pagoService.calcularPagoSolidoTotal(datosCentroAcopio);
+        assertEquals(resultadoEsperado, pagoSolidoTotal);
     }
 
     @Test
     void testCalcularBonificacionMayorA10DiasEnvioMT() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setDias_envio_m_t(15);
-        Integer pago_leche = 1000;
-        Integer bonificacion = pago_service.calcularBonificacionPorFrecuencia(datos_ca, pago_leche);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setDiasEnvioMyT(15);
+        Integer pagoLeche = 1000;
+        Integer bonificacion = pagoService.calcularBonificacionPorFrecuencia(datosCentroAcopio, pagoLeche);
         assertEquals(200, bonificacion);
     }
 
     @Test
     void testCalcularBonificacionMayorA10DiasEnvioM() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setDias_envio_m_t(5);
-        datos_ca.setDias_envio_m(12);
-        Integer pago_leche = 1000;
-        Integer bonificacion = pago_service.calcularBonificacionPorFrecuencia(datos_ca, pago_leche);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setDiasEnvioMyT(5);
+        datosCentroAcopio.setDiasEnvioM(12);
+        Integer pagoLeche = 1000;
+        Integer bonificacion = pagoService.calcularBonificacionPorFrecuencia(datosCentroAcopio, pagoLeche);
         assertEquals(120, bonificacion);
     }
 
     @Test
     void testCalcularBonificacionMayorA10DiasEnvioT() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setDias_envio_m_t(5);
-        datos_ca.setDias_envio_m(7);
-        datos_ca.setDias_envio_t(11);
-        Integer pago_leche = 1000;
-        Integer bonificacion = pago_service.calcularBonificacionPorFrecuencia(datos_ca, pago_leche);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setDiasEnvioMyT(5);
+        datosCentroAcopio.setDiasEnvioM(7);
+        datosCentroAcopio.setDiasEnvioT(11);
+        Integer pagoLeche = 1000;
+        Integer bonificacion = pagoService.calcularBonificacionPorFrecuencia(datosCentroAcopio, pagoLeche);
         assertEquals( 80, bonificacion);
     }
 
     @Test
     void testCalcularBonificacionSinBonificacion() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setDias_envio_m_t(5);
-        datos_ca.setDias_envio_m(7);
-        datos_ca.setDias_envio_t(9);
-        Integer pago_leche = 1000;
-        Integer bonificacion = pago_service.calcularBonificacionPorFrecuencia(datos_ca, pago_leche);
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setDiasEnvioMyT(5);
+        datosCentroAcopio.setDiasEnvioM(7);
+        datosCentroAcopio.setDiasEnvioT(9);
+        Integer pagoLeche = 1000;
+        Integer bonificacion = pagoService.calcularBonificacionPorFrecuencia(datosCentroAcopio, pagoLeche);
         assertEquals(0, bonificacion);
     }
 
-    @Test
-    void testCalcularDctoVariacionNegativaLecheRango9a25() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_leche(-15);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_leche = pago_service.calcularDctoVariacionLeche(datos_ca, pago_acopio_leche);
-        assertEquals(70, dcto_variacion_leche);
+    @ParameterizedTest
+    @CsvSource({"-15, 70", "-35, 150", "-60, 300"})
+    void testCalcularDctoVariacionLeche(int variacionLeche, int resultadoEsperado){
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setVariacionLeche(variacionLeche);
+        Integer pagoAcopioLeche = 1000;
+        Integer dctoVariacionLeche = pagoService.calcularDctoVariacionLeche(datosCentroAcopio, pagoAcopioLeche);
+        assertEquals(resultadoEsperado, dctoVariacionLeche);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"-20, 1200", "-35, 2000", "-50, 3000"})
+    void testCalcularDctoVariaiconGrasa(int variacionGrasa, int resultadoEsperado){
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setVariacionGrasa(variacionGrasa);
+        Integer pagoAcopioLeche = 10000;
+        Integer dctoVariacionGrasa = pagoService.calcularDctoVariacionGrasa(datosCentroAcopio, pagoAcopioLeche);
+
+        assertEquals(resultadoEsperado, dctoVariacionGrasa);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"-8, 180", "-18, 270", "-40, 450"})
+    void testCalcularDctoVariaiconSolidoTotal(int variacionSolidoTotal, int resultadoEsperado){
+        DatosCentroAcopioEntity datosCentroAcopio = new DatosCentroAcopioEntity();
+        datosCentroAcopio.setVariacionSolidoTotal(variacionSolidoTotal);
+        Integer pagoAcopioLeche = 1000;
+        Integer dctoVariacionSolidoTotal = pagoService.calcularDctoVariacionSolidoTotal(datosCentroAcopio, pagoAcopioLeche);
+
+        assertEquals(resultadoEsperado, dctoVariacionSolidoTotal);
     }
 
     @Test
-    void testCalcularDctoVariacionNegativaLecheRango26a45() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_leche(-35);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_leche = pago_service.calcularDctoVariacionLeche(datos_ca, pago_acopio_leche);
-        assertEquals(150, dcto_variacion_leche);
-    }
-
-    @Test
-    void testCalcularDctoVariacionNegativaLecheMayorA45() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_leche(-60);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_leche = pago_service.calcularDctoVariacionLeche(datos_ca, pago_acopio_leche);
-        assertEquals(300, dcto_variacion_leche);
-    }
-
-    @Test
-    void testCalcularDctoVariacionGrasaRango16a25() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_grasa(-20);
-        Integer pago_acopio_leche = 10000;
-        Integer dcto_variacion_grasa = pago_service.calcularDctoVariacionGrasa(datos_ca, pago_acopio_leche);
-
-        assertEquals(1200, dcto_variacion_grasa);
-    }
-
-    @Test
-    void testCalcularDctoVariacionGrasaRango26a40() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_grasa(-35);
-        Integer pago_acopio_leche = 10000;
-        Integer dcto_variacion_grasa = pago_service.calcularDctoVariacionGrasa(datos_ca, pago_acopio_leche);
-
-        assertEquals(2000, dcto_variacion_grasa);
-    }
-
-    @Test
-    void testCalcularDctoVariacionGrasaRangoMayorA41() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_grasa(-50);
-        Integer pago_acopio_leche = 10000;
-        Integer dcto_variacion_grasa = pago_service.calcularDctoVariacionGrasa(datos_ca, pago_acopio_leche);
-
-        assertEquals(3000, dcto_variacion_grasa);
-    }
-
-    @Test
-    public void testCalcularDctoVariacionSolidoTotalRango7a12() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_solido_total(-8);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_st = pago_service.calcularDctoVariacionSolidoTotal(datos_ca, pago_acopio_leche);
-        assertEquals(180, dcto_variacion_st);
-    }
-
-    @Test
-    public void testCalcularDctoVariacionSolidoTotalRango13a35() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_solido_total(-18);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_st = pago_service.calcularDctoVariacionSolidoTotal(datos_ca, pago_acopio_leche);
-        assertEquals(270, dcto_variacion_st);
-    }
-
-    @Test
-    public void testCalcularDctoVariacionSolidoTotalMayorQue36() {
-        DatosCentroAcopioEntity datos_ca = new DatosCentroAcopioEntity();
-        datos_ca.setVariacion_solido_total(-40);
-        Integer pago_acopio_leche = 1000;
-        Integer dcto_variacion_st = pago_service.calcularDctoVariacionSolidoTotal(datos_ca, pago_acopio_leche);
-        assertEquals(450, dcto_variacion_st);
-    }
-
-    @Test
-    public void testCalcularMontoRetencionPagaRetencion(){
+    void testCalcularMontoRetencionPagaRetencion(){
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "Si");
         PagoEntity pago = new PagoEntity();
-        pago.setPago_total(1000000);
+        pago.setPagoTotal(1000000);
         pago.setProveedor(proveedor);
-        Integer monto_retencion = pago_service.calcularMontoRetencion(pago);
+        Integer montoRetencion = pagoService.calcularMontoRetencion(pago);
 
-        assertEquals(130000, monto_retencion);
+        assertEquals(130000, montoRetencion);
     }
 
     @Test
-    public void testCalcularMontoRetencionNoPagaRetencion(){
+    void testCalcularMontoRetencionNoPagaRetencion(){
         ProveedorEntity proveedor = new ProveedorEntity("12345", "Proveedor", "A", "No");
         PagoEntity pago = new PagoEntity();
-        pago.setPago_total(1000000);
+        pago.setPagoTotal(1000000);
         pago.setProveedor(proveedor);
-        Integer monto_retencion = pago_service.calcularMontoRetencion(pago);
+        Integer montoRetencion = pagoService.calcularMontoRetencion(pago);
 
-        assertEquals(0, monto_retencion);
+        assertEquals(0, montoRetencion);
     }
 }

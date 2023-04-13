@@ -31,45 +31,45 @@ public class QuincenaEntity {
     }
 
     public String toString(){
-        String mes_formateado = mes.toString();
-        if(mes_formateado.length() == 1){
-            mes_formateado = "0" + mes_formateado;
+        String mesFormateado = mes.toString();
+        if(mesFormateado.length() == 1){
+            mesFormateado = "0" + mesFormateado;
         }
-        return year.toString() + "/" + mes_formateado + "/" + numero.toString();
+        return year.toString() + "/" + mesFormateado + "/" + numero.toString();
     }
 
     public boolean estaDentroQuincena(Date fecha){
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fecha);
-        int mes_fecha = calendar.get(Calendar.MONTH) + 1;
-        int year_fecha = calendar.get(Calendar.YEAR);
-        int dia_fecha = calendar.get(Calendar.DAY_OF_MONTH);
-        if(numero == 1 && dia_fecha > 15){
+        int mesFecha = calendar.get(Calendar.MONTH) + 1;
+        int yearFecha = calendar.get(Calendar.YEAR);
+        int diaFecha = calendar.get(Calendar.DAY_OF_MONTH);
+        if(numero == 1 && diaFecha > 15){
             return false;
-        } else if (numero == 2 && dia_fecha < 15) {
+        } else if (numero == 2 && diaFecha < 15) {
             return false;
         }
-        return year_fecha == year && mes_fecha == mes;
+        return yearFecha == year && mesFecha == mes;
     }
 
     public QuincenaEntity obtenerQuincenaAnterior(){
-        QuincenaEntity quincena_anterior = new QuincenaEntity();
+        QuincenaEntity quincenaAnterior = new QuincenaEntity();
         if(numero == 2){
-            quincena_anterior.setNumero(1);
-            quincena_anterior.setMes(mes);
-            quincena_anterior.setYear(year);
+            quincenaAnterior.setNumero(1);
+            quincenaAnterior.setMes(mes);
+            quincenaAnterior.setYear(year);
         }
         else if(mes == 1){
-            quincena_anterior.setNumero(2);
-            quincena_anterior.setMes(12);
-            quincena_anterior.setYear(year - 1);
+            quincenaAnterior.setNumero(2);
+            quincenaAnterior.setMes(12);
+            quincenaAnterior.setYear(year - 1);
         }
         else {
-            quincena_anterior.setNumero(2);
-            quincena_anterior.setMes(mes - 1);
-            quincena_anterior.setYear(year);
+            quincenaAnterior.setNumero(2);
+            quincenaAnterior.setMes(mes - 1);
+            quincenaAnterior.setYear(year);
         }
-        quincena_anterior.setId(quincena_anterior.toString());
-        return quincena_anterior;
+        quincenaAnterior.setId(quincenaAnterior.toString());
+        return quincenaAnterior;
     }
 }

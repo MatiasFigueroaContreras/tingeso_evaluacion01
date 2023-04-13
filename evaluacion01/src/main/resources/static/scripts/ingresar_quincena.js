@@ -54,7 +54,7 @@ const fortnight_select = document.getElementById("quincena");
 const start_year = 2021;
 const current_date = new Date();
 const current_year = current_date.getFullYear();
-const current_month = current_date.getMonth();
+const current_month = current_date.getMonth() + 1;
 const current_day = current_date.getDate();
 const fortnights = ["Primera", "Segunda"];
 const standard_fortnights_select = getStandardFortnightSelect();
@@ -86,10 +86,10 @@ for (let fortnight = 1; fortnight <= final_fortnight; fortnight++) {
 fortnight_select.value = final_fortnight;
 
 // Meses que se pueden seleccionar
-for (let month = 0; month <= final_month; month++) {
+for (let month = 1; month <= final_month; month++) {
     var month_option = document.createElement("option");
-    month_option.value = month + 1;
-    month_option.text = getMonthName(month);
+    month_option.value = month;
+    month_option.text = getMonthName(month - 1);
     month_select.append(month_option);
 }
 
@@ -99,10 +99,10 @@ if (final_month === -1) {
     //  por lo tanto se llega hasta el anterior
     month_select.replaceWith(standard_month_select);
     final_year = current_year - 1;
-    month_select.value = 11;
+    month_select.value = 12;
 } else {
     // Valor actual del mes por defecto
-    month_select.value = final_month + 1;
+    month_select.value = final_month;
 }
 
 // Años que puede seleccionar

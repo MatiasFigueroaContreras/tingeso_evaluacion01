@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class GrasaSolidoTotalEntity {
     @Id
     private String id;
-    private Integer porcentaje_grasa;
-    private Integer porcentaje_solido_total;
+    private Integer porcentajeGrasa;
+    private Integer porcentajeSolidoTotal;
     @ManyToOne
     private ProveedorEntity proveedor;
     @ManyToOne

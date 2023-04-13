@@ -13,31 +13,31 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.services.GrasaSolidoTotalService;
 import tingeso.evaluacion01.services.QuincenaService;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping
 public class GrasaSolidoTotalController {
     @Autowired
-    GrasaSolidoTotalService grasa_solido_total_service;
+    GrasaSolidoTotalService grasaSolidoTotalService;
     @Autowired
-    QuincenaService quincena_service;
+    QuincenaService quincenaService;
 
     @PostMapping("/grasas-solidos-totales/importar")
     public String importarAcopioLeche(@RequestParam("file") MultipartFile file,
                                       @RequestParam("year") Integer year,
                                       @RequestParam("mes") Integer mes,
                                       @RequestParam("quincena") Integer numero,
-                                      RedirectAttributes redirect_attr) {
+                                      RedirectAttributes redirectAttr) {
         try {
-            ArrayList<GrasaSolidoTotalEntity> grasas_solidos_totales = grasa_solido_total_service.leerExcel(file);
-            QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            grasa_solido_total_service.validarListaGrasasSolidosTotales(grasas_solidos_totales);
-            grasa_solido_total_service.guardarGrasasSolidosTotales(grasas_solidos_totales, quincena);
-            redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
+            List<GrasaSolidoTotalEntity> grasasSolidosTotales = grasaSolidoTotalService.leerExcel(file);
+            QuincenaEntity quincena = quincenaService.ingresarQuincena(year, mes, numero);
+            grasaSolidoTotalService.validarListaGrasasSolidosTotales(grasasSolidosTotales);
+            grasaSolidoTotalService.guardarGrasasSolidosTotales(grasasSolidosTotales, quincena);
+            redirectAttr.addFlashAttribute("message", "Datos registrados correctamente!")
                     .addFlashAttribute("class", "success-alert");
         } catch (Exception e) {
-            redirect_attr.addFlashAttribute("message", e.getMessage())
+            redirectAttr.addFlashAttribute("message", e.getMessage())
                     .addFlashAttribute("class", "error-alert");
         }
 

@@ -13,31 +13,31 @@ import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.services.AcopioLecheService;
 import tingeso.evaluacion01.services.QuincenaService;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping
 public class AcopioLecheController {
     @Autowired
-    AcopioLecheService acopio_leche_service;
+    AcopioLecheService acopioLecheService;
     @Autowired
-    QuincenaService quincena_service;
+    QuincenaService quincenaService;
 
     @PostMapping("/acopios-leche/importar")
     public String importarAcopioLeche(@RequestParam("file")MultipartFile file,
                                       @RequestParam("year") Integer year,
                                       @RequestParam("mes") Integer mes,
                                       @RequestParam("quincena") Integer numero,
-                                      RedirectAttributes redirect_attr) {
+                                      RedirectAttributes redirectAttr) {
         try {
-            ArrayList<AcopioLecheEntity> acopios_leche = acopio_leche_service.leerExcel(file);
-            QuincenaEntity quincena = quincena_service.ingresarQuincena(year, mes, numero);
-            acopio_leche_service.validarListaAcopioLecheQuincena(acopios_leche, quincena);
-            acopio_leche_service.guardarAcopiosLeches(acopios_leche);
-            redirect_attr.addFlashAttribute("message", "Datos registrados correctamente!")
+            List<AcopioLecheEntity> acopiosLeche = acopioLecheService.leerExcel(file);
+            QuincenaEntity quincena = quincenaService.ingresarQuincena(year, mes, numero);
+            acopioLecheService.validarListaAcopioLecheQuincena(acopiosLeche, quincena);
+            acopioLecheService.guardarAcopiosLeches(acopiosLeche);
+            redirectAttr.addFlashAttribute("message", "Datos registrados correctamente!")
                     .addFlashAttribute("class", "success-alert");
         } catch (Exception e) {
-            redirect_attr.addFlashAttribute("message", e.getMessage())
+            redirectAttr.addFlashAttribute("message", e.getMessage())
                 .addFlashAttribute("class", "error-alert");
         }
 

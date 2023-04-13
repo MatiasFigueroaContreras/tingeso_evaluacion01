@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Service
 public class QuincenaService {
     @Autowired
-    QuincenaRepository quincena_repository;
+    QuincenaRepository quincenaRepository;
 
-    public QuincenaEntity ingresarQuincena(Integer year, Integer mes, Integer numero) throws Exception{
+    public QuincenaEntity ingresarQuincena(Integer year, Integer mes, Integer numero) {
         validarDatosQuincena(year, mes, numero);
 
         QuincenaEntity quincena = new QuincenaEntity();
@@ -22,31 +22,31 @@ public class QuincenaService {
         quincena.setNumero(numero);
         String id = quincena.toString();
         quincena.setId(id);
-        return quincena_repository.save(quincena);
+        return quincenaRepository.save(quincena);
     }
 
-    public void validarDatosQuincena(Integer year, Integer mes, Integer numero) throws Exception{
-        LocalDateTime fecha_actual = LocalDateTime.now();
-        if(year < 0){
-            throw new Exception("El año ingresado no es valido");
+    public void validarDatosQuincena(Integer year, Integer mes, Integer numero) {
+        LocalDateTime fechaActual = LocalDateTime.now();
+        if (year < 0) {
+            throw new IllegalArgumentException("El año ingresado no es valido");
         }
 
-        if(mes > 12 || mes < 1){
-            throw new Exception("El mes de la quincena no es valido");
+        if (mes > 12 || mes < 1) {
+            throw new IllegalArgumentException("El mes de la quincena no es valido");
         }
 
-        if(numero != 1 && numero != 2){
-            throw new Exception("El numero de quincena no es valido");
+        if (numero != 1 && numero != 2) {
+            throw new IllegalArgumentException("El numero de quincena no es valido");
         }
 
         //Verifica que la quincena este antes de la fecha actual con 2 dias de margen
-        if(fecha_actual.isBefore(LocalDateTime.of(year, mes, 13*numero, 0, 0))){
-            throw new Exception("La quincena ingresada es superior a la fecha actual");
+        if (fechaActual.isBefore(LocalDateTime.of(year, mes, 13 * numero, 0, 0))) {
+            throw new IllegalArgumentException("La quincena ingresada es superior a la fecha actual");
         }
     }
 
     public boolean estaRegistradaQuincena(Integer year, Integer mes, Integer numero) {
         String id = year.toString() + "/" + mes.toString() + "-" + numero.toString();
-        return quincena_repository.findById(id).isPresent();
+        return quincenaRepository.findById(id).isPresent();
     }
 }

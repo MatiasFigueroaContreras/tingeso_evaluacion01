@@ -8,53 +8,52 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import tingeso.evaluacion01.entities.AcopioLecheEntity;
 import tingeso.evaluacion01.entities.DatosCentroAcopioEntity;
 import tingeso.evaluacion01.entities.PagoEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.services.DatosCentroAcopioService;
 import tingeso.evaluacion01.services.PagoService;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping
 public class PagoController {
     @Autowired
-    PagoService pago_service;
+    PagoService pagoService;
     @Autowired
-    DatosCentroAcopioService datos_ca_service;
+    DatosCentroAcopioService datosCentroAcopioService;
 
     @PostMapping("/planilla-pagos/calcular")
     public String calcularPlanillaPagos(@RequestParam("year") Integer year,
                                         @RequestParam("mes") Integer mes,
                                         @RequestParam("quincena") Integer numero,
-                                        RedirectAttributes redirect_attr) {
+                                        RedirectAttributes redirectAttr) {
         QuincenaEntity quincena = new QuincenaEntity(year, mes, numero);
 
-        if(pago_service.existenPagosPorQuincena(quincena)){
-            redirect_attr.addFlashAttribute("message",
+        if(pagoService.existenPagosPorQuincena(quincena)){
+            redirectAttr.addFlashAttribute("message",
                             "Estos pagos ya fueron calculados")
                     .addFlashAttribute("class", "informative-alert");
-            ArrayList<PagoEntity> pagos = pago_service.obtenerPagosPorQuincena(quincena);
-            redirect_attr.addFlashAttribute("pagos", pagos);
+            List<PagoEntity> pagos = pagoService.obtenerPagosPorQuincena(quincena);
+            redirectAttr.addFlashAttribute("pagos", pagos);
         }
-        else if(datos_ca_service.existenDatosCAParaCalculoPorQuincena(quincena)){
+        else if(datosCentroAcopioService.existenDatosCAParaCalculoPorQuincena(quincena)){
             try {
-                ArrayList<DatosCentroAcopioEntity> lista_datos_ca = datos_ca_service.calcularDatosCAPorQuincena(quincena);
-                datos_ca_service.guardarListaDatosCA(lista_datos_ca);
-                ArrayList<PagoEntity> pagos = pago_service.calcularPagos(lista_datos_ca);
-                pago_service.guardarPagos(pagos);
-                redirect_attr.addFlashAttribute("message", "Planilla de pagos calculada!")
+                List<DatosCentroAcopioEntity> listaDatosCa = datosCentroAcopioService.calcularDatosCAPorQuincena(quincena);
+                datosCentroAcopioService.guardarListaDatosCA(listaDatosCa);
+                List<PagoEntity> pagos = pagoService.calcularPagos(listaDatosCa);
+                pagoService.guardarPagos(pagos);
+                redirectAttr.addFlashAttribute("message", "Planilla de pagos calculada!")
                         .addFlashAttribute("class", "success-alert");
-                redirect_attr.addFlashAttribute("pagos", pagos);
+                redirectAttr.addFlashAttribute("pagos", pagos);
             } catch (Exception e) {
-                redirect_attr.addFlashAttribute("message", e.getMessage())
+                redirectAttr.addFlashAttribute("message", e.getMessage())
                         .addFlashAttribute("class", "error-alert");
             }
         }
         else{
-            redirect_attr.addFlashAttribute("message",
+            redirectAttr.addFlashAttribute("message",
                             "No se han ingresado los datos del centro de acopio para el calculo de los pagos")
                     .addFlashAttribute("class", "error-alert");
         }
@@ -69,7 +68,7 @@ public class PagoController {
 
     @GetMapping("/planilla-pagos")
     public String planillaPagosPage(Model model){
-        ArrayList<PagoEntity> pagos = pago_service.obtenerPagos();
+        List<PagoEntity> pagos = pagoService.obtenerPagos();
         model.addAttribute("pagos", pagos);
         if(pagos.isEmpty()){
             model.addAttribute("message", "Aun no se han calculado pagos");
