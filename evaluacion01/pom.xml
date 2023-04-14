@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tingeso</groupId>
-	<artifactId>evaluacion01</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>milkstgo</artifactId>
+	<version>1</version>
 	<name>evaluacion01</name>
-	<description>Evaluacion 01 Tingeso </description>
+	<description>Evaluacion 01 Tingeso - MilkStgo</description>
 	<properties>
 		<java.version>17</java.version>
 		<sonar.exclusions>

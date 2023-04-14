@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  postgres-db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: tingeso
+      POSTGRES_PASSWORD: tingeso
+      POSTGRES_DB: milkstgo_tingeso
+    ports:
+      - "5432:5432"
+  app:
+    container_name: tingeso_evaluacion01
+    image: matiasfc/tingeso_evaluacion01
+    depends_on:
+      - postgres-db
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/milkstgo_tingeso
+      - SPRING_DATASOURCE_USERNAME=tingeso
+      - SPRING_DATASOURCE_PASSWORD=tingeso
+    deploy:
+      restart_policy:
+        condition: on-failure
