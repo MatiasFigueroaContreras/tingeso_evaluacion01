@@ -1,5 +1,18 @@
 version: "3.8"
 services:
+  nginx:
+      image: nginx:latest
+      container_name: nginx-proxy
+      restart: always
+      ports:
+        - "80:80"
+      volumes:
+        - ./nginx/conf.d:/etc/nginx/conf.d
+      depends_on:
+        - app1
+        - app2
+        - app3
+
   postgres-db:
     image: postgres
     restart: always
@@ -11,13 +24,44 @@ services:
       POSTGRES_DB: milkstgo_tingeso
     ports:
       - "5432:5432"
-  app:
-    container_name: tingeso_evaluacion01
+
+  app1:
+    container_name: milkstgo1
     image: matiasfc/tingeso_evaluacion01
     depends_on:
       - postgres-db
     ports:
-      - "8090:8090"
+      - "8091:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/milkstgo_tingeso
+      - SPRING_DATASOURCE_USERNAME=tingeso
+      - SPRING_DATASOURCE_PASSWORD=tingeso
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  app2:
+    container_name: milkstgo2
+    image: matiasfc/tingeso_evaluacion01
+    depends_on:
+      - postgres-db
+    ports:
+      - "8092:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/milkstgo_tingeso
+      - SPRING_DATASOURCE_USERNAME=tingeso
+      - SPRING_DATASOURCE_PASSWORD=tingeso
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  app3:
+    container_name: milkstgo3
+    image: matiasfc/tingeso_evaluacion01
+    depends_on:
+      - postgres-db
+    ports:
+      - "8093:8090"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/milkstgo_tingeso
       - SPRING_DATASOURCE_USERNAME=tingeso
