@@ -1,0 +1,34 @@
+# Comando para ingresar las credenciales de acceso a la cuenta de AWS
+aws configure
+
+# Comando para la creacion del key-pair necesario para
+#  logearse en la instancia a crear en AWS (Ya creada)
+aws ec2 create-key-pair 
+    --key-name milkstgo-key-pair 
+    --key-type rsa 
+    --key-format pem 
+    --query "KeyMaterial" 
+    --output text > milkstgo-key-pair.pem
+
+# Comandos para la creacion de la instancia teniendo el main.tf configurado
+terraform init
+terraform validate
+terraform apply
+
+# Comando para ingresar a la instancia mediante ssh
+ssh -i [milkstgo-key-pair.pem] ec2-user@[public_ip]
+
+[milkstgo-key-pair.pem] -> direccion en el pc donde se encuentra la key-pair disponible en aws
+[public-ip] -> ip publica de la instancia dada por terraform como output, tambien se puede encontrar en la instancias de AWS
+
+# Comando para levantar las imagenes de la app mediante docker-compose (si es que todo se instalo correctamente con el setup.sh)
+docker-compose --compatibility up
+
+# Dropear las imagenes
+docker-compose down
+
+# Salir de la instancia
+exit
+
+# Terminar la instancia creada en AWS
+terraform destroy
