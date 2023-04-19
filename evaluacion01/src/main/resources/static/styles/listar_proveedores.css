@@ -4,7 +4,7 @@
 
 .data-table {
     min-width: 1000px;
-    margin-top: 2vh;
+    margin: 2vh 8px 6vh 8px;
     border-collapse: collapse;
     border-radius: 15px;
     overflow: hidden;

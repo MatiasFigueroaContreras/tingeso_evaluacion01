@@ -42,3 +42,7 @@
     font-size: 16px;
     font-weight: 500;
 }
+
+.form button:hover {
+    background: #ee7722;
+}

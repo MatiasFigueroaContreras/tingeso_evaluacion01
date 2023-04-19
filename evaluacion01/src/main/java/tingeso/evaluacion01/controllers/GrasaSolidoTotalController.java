@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tingeso.evaluacion01.entities.GrasaSolidoTotalEntity;
 import tingeso.evaluacion01.entities.QuincenaEntity;
 import tingeso.evaluacion01.services.GrasaSolidoTotalService;
+import tingeso.evaluacion01.services.PagoService;
 import tingeso.evaluacion01.services.QuincenaService;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public class GrasaSolidoTotalController {
     GrasaSolidoTotalService grasaSolidoTotalService;
     @Autowired
     QuincenaService quincenaService;
+    @Autowired
+    PagoService pagoService;
 
     @PostMapping("/grasas-solidos-totales/importar")
     public String importarAcopioLeche(@RequestParam("file") MultipartFile file,
@@ -29,16 +32,22 @@ public class GrasaSolidoTotalController {
                                       @RequestParam("mes") Integer mes,
                                       @RequestParam("quincena") Integer numero,
                                       RedirectAttributes redirectAttr) {
-        try {
-            List<GrasaSolidoTotalEntity> grasasSolidosTotales = grasaSolidoTotalService.leerExcel(file);
-            QuincenaEntity quincena = quincenaService.ingresarQuincena(year, mes, numero);
-            grasaSolidoTotalService.validarListaGrasasSolidosTotales(grasasSolidosTotales);
-            grasaSolidoTotalService.guardarGrasasSolidosTotales(grasasSolidosTotales, quincena);
-            redirectAttr.addFlashAttribute("message", "Datos registrados correctamente!")
-                    .addFlashAttribute("class", "success-alert");
-        } catch (Exception e) {
-            redirectAttr.addFlashAttribute("message", e.getMessage())
+        QuincenaEntity quincena = quincenaService.ingresarQuincena(year, mes, numero);
+        if(pagoService.existenPagosPorQuincena(quincena)){
+            redirectAttr.addFlashAttribute("message", "Ya existen datos calculados para la quincena seleccionada")
                     .addFlashAttribute("class", "error-alert");
+        }
+        else{
+            try {
+                List<GrasaSolidoTotalEntity> grasasSolidosTotales = grasaSolidoTotalService.leerExcel(file);
+                grasaSolidoTotalService.validarListaGrasasSolidosTotales(grasasSolidosTotales);
+                grasaSolidoTotalService.guardarGrasasSolidosTotales(grasasSolidosTotales, quincena);
+                redirectAttr.addFlashAttribute("message", "Datos registrados correctamente!")
+                        .addFlashAttribute("class", "success-alert");
+            } catch (Exception e) {
+                redirectAttr.addFlashAttribute("message", e.getMessage())
+                        .addFlashAttribute("class", "error-alert");
+            }
         }
 
         return "redirect:/grasas-solidos-totales/importar";
